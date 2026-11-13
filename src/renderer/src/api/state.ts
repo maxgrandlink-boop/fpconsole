@@ -136,6 +136,8 @@ export const state: {
       region: 'la',
       start_url: null,
       os_browser: 'Win10 · 155',
+      os: { name: 'Windows', version: '11' },
+      kernel: { name: 'Chrome', version: '131' },
       status: 'running',
     },
     {
@@ -169,6 +171,8 @@ export const state: {
       region: 'ny',
       start_url: null,
       os_browser: 'Win10 · 153',
+      os: { name: 'Windows', version: '10' },
+      kernel: { name: 'Chrome', version: '129' },
       status: 'closed',
     },
     {
@@ -202,6 +206,8 @@ export const state: {
       region: 'la',
       start_url: null,
       os_browser: 'Win10 · 151',
+      os: { name: 'macOS', version: '14' },
+      kernel: { name: 'Chrome', version: '130' },
       status: 'ip_fail',
     },
     {
@@ -235,6 +241,8 @@ export const state: {
       region: 'ny',
       start_url: null,
       os_browser: 'Win10 · 152',
+      os: { name: 'macOS', version: '13' },
+      kernel: { name: 'Chrome', version: '131' },
       status: 'closed',
     },
     {
@@ -268,6 +276,8 @@ export const state: {
       region: null,
       start_url: 'https://www.example.com',
       os_browser: 'Win10 · 154',
+      os: { name: 'Windows', version: '11' },
+      kernel: { name: 'Chrome', version: '130' },
       status: 'running',
     },
     {
@@ -301,6 +311,8 @@ export const state: {
       region: null,
       start_url: null,
       os_browser: 'Win10 · 150',
+      os: { name: 'macOS', version: '15' },
+      kernel: { name: 'Chrome', version: '129' },
       status: 'closed',
     },
     {
@@ -334,6 +346,8 @@ export const state: {
       region: null,
       start_url: null,
       os_browser: 'Win10 · 156',
+      os: { name: 'Windows', version: '10' },
+      kernel: { name: 'Chrome', version: '131' },
       status: 'closed',
     },
     {
@@ -367,6 +381,8 @@ export const state: {
       region: null,
       start_url: null,
       os_browser: 'Win10 · 153',
+      os: { name: 'macOS', version: '14' },
+      kernel: { name: 'Chrome', version: '130' },
       status: 'closed',
     },
   ],

@@ -39,8 +39,6 @@ const tab = ref<TabKey>('all');
 const busy = ref(false);
 const formError = ref('');
 const menuId = ref<string | null>(null);
-const notes = ref<Record<string, string>>({});
-const editingNote = ref<string | null>(null);
 const form = ref<CreateForm>({
   line: 'america',
   country: 'us',
@@ -290,7 +288,7 @@ onMounted(async () => {
       <div v-else class="table">
         <div class="head">
           <span class="title-col">标题</span>
-          <span class="desc-col">描述</span>
+          <span class="sys-col">系统 / 内核</span>
           <span class="proxy-col">代理</span>
         </div>
         <article v-for="persona in visible" :key="persona.id" class="env-row">
@@ -299,18 +297,7 @@ onMounted(async () => {
             <PandaMark :size="28" />
             <div class="name">
               <strong :title="persona.slot">{{ persona.slot }}</strong>
-              <span
-                :title="
-                  persona.status === 'ip_fail'
-                    ? `${fmtTime(persona.created_at)} IP 不通`
-                    : fmtTime(persona.created_at)
-                "
-              >
-                {{ fmtTime(persona.created_at) }}
-                <template v-if="persona.status === 'ip_fail'">
-                  <i class="fail-dot" /><em>IP 不通</em>
-                </template>
-              </span>
+              <span :title="fmtTime(persona.created_at)">{{ fmtTime(persona.created_at) }}</span>
             </div>
             <div class="ops" @click.stop>
               <button
@@ -344,23 +331,26 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <div class="desc-col">
-            <button
-              v-if="editingNote !== persona.id && !notes[persona.id]"
-              class="add"
-              type="button"
-              @click="editingNote = persona.id"
-            >
-              添加
-            </button>
-            <input
-              v-else
-              :value="notes[persona.id] ?? ''"
-              @change="
-                notes[persona.id] = ($event.target as HTMLInputElement).value;
-                editingNote = null;
-              "
-            />
+          <div class="sys-col">
+            <span class="os-line">
+              <svg
+                v-if="persona.os.name === 'Windows'"
+                class="os-ico"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <rect x="1" y="1" width="6" height="6" />
+                <rect x="9" y="1" width="6" height="6" />
+                <rect x="1" y="9" width="6" height="6" />
+                <rect x="9" y="9" width="6" height="6" />
+              </svg>
+              <svg v-else class="os-ico" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M9.2 2.2c.7-.8 1.8-.7 2.3.1-.9.3-1.6.8-2.3-.1z" />
+                <circle cx="8" cy="9.2" r="5" />
+              </svg>
+              {{ persona.os.name }} {{ persona.os.version }}
+            </span>
+            <span class="kernel-line">{{ persona.kernel.name }} {{ persona.kernel.version }}</span>
           </div>
           <div class="proxy-col">
             <span class="host">{{ hostOf(persona.proxy.uri) }}</span>
@@ -368,6 +358,7 @@ onMounted(async () => {
               <FlagIcon :code="persona.country" />
               <StatusDot :tone="persona.status === 'ip_fail' ? 'fail' : 'ok'" />
               {{ persona.proxy.ip || '—' }}
+              <em v-if="persona.status === 'ip_fail'">IP 不通</em>
             </span>
           </div>
         </article>
@@ -476,7 +467,7 @@ select {
 .head,
 .env-row {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
 }
 .head {
@@ -485,14 +476,14 @@ select {
   min-height: 36px;
 }
 .title-col,
-.desc-col,
+.sys-col,
 .proxy-col {
   min-width: 0;
   padding: 0 var(--space-lg);
   display: flex;
   align-items: center;
 }
-.desc-col,
+.sys-col,
 .proxy-col {
   flex-direction: column;
   align-items: flex-start;
@@ -540,26 +531,15 @@ select {
   align-items: center;
   gap: 6px;
 }
-.fail-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--danger);
-  display: inline-block;
-}
 .name span {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.name em {
+.ip em {
   color: var(--danger-text);
   font-style: normal;
-}
-.name span template,
-.ip-fail-label {
-  color: var(--danger-text);
 }
 .ops {
   position: relative;
@@ -623,11 +603,23 @@ select {
   text-align: left;
   padding: 0 var(--space-md);
 }
-.add {
-  border: 0;
-  background: transparent;
+.os-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: var(--fs-body);
+  min-width: 0;
+}
+.os-ico {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+.kernel-line {
   color: var(--accent);
-  padding: 0;
+  font-size: var(--fs-caption);
 }
 .proxy {
   display: flex;

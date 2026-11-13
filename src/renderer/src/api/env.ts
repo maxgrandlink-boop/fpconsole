@@ -44,6 +44,16 @@ export interface PersonaProxy {
 /** 列表状态。异常不进运行中/已关闭/已过期计数，但仍算在全部里。 */
 export type EnvStatus = 'running' | 'closed' | 'ip_fail';
 
+export interface OsInfo {
+  name: 'Windows' | 'macOS';
+  version: string;
+}
+
+export interface KernelInfo {
+  name: 'Chrome';
+  version: string;
+}
+
 export interface Persona {
   id: string;
   seq: number;
@@ -67,6 +77,8 @@ export interface Persona {
   region: string | null;
   start_url: string | null;
   os_browser: string;
+  os: OsInfo;
+  kernel: KernelInfo;
   status: EnvStatus;
 }
 
@@ -336,6 +348,8 @@ function personaFromSlot(
     region: regionCode,
     start_url: startUrl,
     os_browser: `Win10 · ${major}`,
+    os: seq % 2 === 0 ? { name: 'Windows', version: '11' } : { name: 'macOS', version: '14' },
+    kernel: { name: 'Chrome', version: String(129 + (seq % 3)) },
     status: 'closed',
     proxy: {
       uri: line.uri,
