@@ -376,10 +376,19 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Crea
   const { country, region } = resolveCountry(input.line, input.country, input.region);
   const slots = nextSlots(slotPrefix(country, region), input.count);
   const line = assignProxyNow(country, region);
-  const created = slots.map((slot) =>
-    personaFromSlot(slot, country.code, region?.code ?? null, line, startUrl || null),
-  );
-  state.personas.push(...created);
+  // 逐个写入后再取下一个序号。同步 map 会让同一毫秒内的环境共用 seq 和 id。
+  const created: Persona[] = [];
+  for (const slot of slots) {
+    const persona = personaFromSlot(
+      slot,
+      country.code,
+      region?.code ?? null,
+      line,
+      startUrl || null,
+    );
+    state.personas.push(persona);
+    created.push(persona);
+  }
 
   const results: CreateEnvResult[] = [];
   for (const persona of created) {
