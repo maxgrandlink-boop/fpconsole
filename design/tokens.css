@@ -119,8 +119,7 @@
   --dur: 150ms;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --sidebar: 208px;
-  --center: 456px;
+  --sidebar: 216px;
   --ctrl: 32px;
 }
 
