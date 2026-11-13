@@ -13,6 +13,7 @@ import {
   toggleStar,
 } from '../api/env';
 import type { EnvStatus, EnvStatusCounts, Persona } from '../api/env';
+import FlagIcon from '../components/FlagIcon.vue';
 import PandaMark from '../components/PandaMark.vue';
 import StatusDot from '../components/StatusDot.vue';
 
@@ -286,46 +287,58 @@ onMounted(async () => {
         <input v-model="keyword" class="search" placeholder="请输入关键词" />
       </div>
       <div v-if="visible.length === 0" class="empty">没有符合条件的环境</div>
-      <div v-else class="rows">
+      <div v-else class="table">
+        <div class="head">
+          <span class="title-col">标题</span>
+          <span class="desc-col">描述</span>
+          <span class="proxy-col">代理</span>
+        </div>
         <article v-for="persona in visible" :key="persona.id" class="env-row">
-          <input type="checkbox" :aria-label="`选择 ${persona.slot}`" />
-          <PandaMark :size="28" />
-          <div class="name">
-            <strong>{{ persona.slot }}</strong>
-            <span>{{ fmtTime(persona.created_at) }}</span>
-          </div>
-          <div class="ops" @click.stop>
-            <button
-              v-if="persona.status === 'running'"
-              class="stop"
-              type="button"
-              aria-label="停止"
-              @click="closeEnv(persona)"
-            >
-              ■
-            </button>
-            <button
-              v-else-if="persona.status === 'ip_fail'"
-              class="retry"
-              type="button"
-              @click="retry(persona)"
-            >
-              <i class="mark" />IP 不通 · 重试
-            </button>
-            <button v-else class="play" type="button" aria-label="打开" @click="openEnv(persona)">
-              ▶
-            </button>
-            <button class="more" type="button" aria-label="更多" @click="menuId = persona.id">
-              ⋮
-            </button>
-            <div v-if="menuId === persona.id" class="menu">
-              <button type="button" @click="onStar(persona)">
-                {{ persona.starred ? '取消星标' : '星标' }}
+          <div class="title-col">
+            <input type="checkbox" :aria-label="`选择 ${persona.slot}`" />
+            <PandaMark :size="28" />
+            <div class="name">
+              <strong>{{ persona.slot }}</strong>
+              <span>
+                {{ fmtTime(persona.created_at) }}
+                <template v-if="persona.status === 'ip_fail'">
+                  <i class="fail-dot" /><em>IP 不通</em>
+                </template>
+              </span>
+            </div>
+            <div class="ops" @click.stop>
+              <button
+                v-if="persona.status === 'running'"
+                class="stop"
+                type="button"
+                aria-label="停止"
+                @click="closeEnv(persona)"
+              >
+                <i></i>
               </button>
-              <button type="button" @click="onDelete(persona)">删除</button>
+              <button
+                v-else
+                class="play"
+                type="button"
+                aria-label="打开"
+                @click="persona.status === 'ip_fail' ? retry(persona) : openEnv(persona)"
+              >
+                <svg viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M3 1.5v9l8-4.5z" />
+                </svg>
+              </button>
+              <button class="more" type="button" aria-label="更多" @click="menuId = persona.id">
+                ⋮
+              </button>
+              <div v-if="menuId === persona.id" class="menu">
+                <button type="button" @click="onStar(persona)">
+                  {{ persona.starred ? '取消星标' : '星标' }}
+                </button>
+                <button type="button" @click="onDelete(persona)">删除</button>
+              </div>
             </div>
           </div>
-          <div class="desc">
+          <div class="desc-col">
             <button
               v-if="editingNote !== persona.id && !notes[persona.id]"
               class="add"
@@ -343,18 +356,10 @@ onMounted(async () => {
               "
             />
           </div>
-          <div class="proxy">
+          <div class="proxy-col">
             <span class="host">{{ hostOf(persona.proxy.uri) }}</span>
             <span class="ip">
-              <svg class="flag" viewBox="0 0 16 12" aria-hidden="true">
-                <rect
-                  width="16"
-                  height="12"
-                  :fill="persona.country === 'us' ? '#3C3B6E' : '#E8EEF6'"
-                />
-                <rect v-if="persona.country === 'us'" y="6" width="16" height="1" fill="#fff" />
-                <rect v-if="persona.country === 'us'" y="8" width="16" height="1" fill="#B22234" />
-              </svg>
+              <FlagIcon :code="persona.country" />
               <StatusDot :tone="persona.status === 'ip_fail' ? 'fail' : 'ok'" />
               {{ persona.proxy.ip || '—' }}
             </span>
@@ -462,39 +467,87 @@ select {
   display: flex;
   flex-direction: column;
 }
+.head,
 .env-row {
   display: grid;
-  grid-template-columns: 28px 28px minmax(180px, 1.2fr) auto minmax(80px, 0.7fr) minmax(200px, 1fr);
-  gap: var(--space-lg);
+  grid-template-columns: minmax(340px, 1.7fr) minmax(120px, 0.8fr) minmax(220px, 1fr);
   align-items: center;
+}
+.head {
+  color: var(--text-3);
+  font-size: var(--fs-caption);
+  min-height: 36px;
+}
+.title-col,
+.desc-col,
+.proxy-col {
+  min-width: 0;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+}
+.desc-col,
+.proxy-col {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  border-left: 1px solid var(--border-subtle);
+  align-self: stretch;
+}
+.title-col {
+  gap: var(--space-md);
+}
+.env-row {
   min-height: 72px;
-  padding: var(--space-md) var(--space-sm);
   border-top: 1px solid var(--border-subtle);
 }
 .env-row:hover {
-  background: var(--primary-soft);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 .name {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 .name strong {
   font-size: var(--fs-body);
   font-weight: 600;
+  color: var(--text);
 }
 .name span,
 .host,
 .ip {
   color: var(--accent);
   font-size: var(--fs-caption);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  display: inline-block;
+}
+.name em {
+  color: var(--danger-text);
+  font-style: normal;
+}
+.name span template,
+.ip-fail-label {
+  color: var(--danger-text);
 }
 .ops {
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  margin-left: auto;
+  flex: 0 0 auto;
 }
 .play,
 .stop,
@@ -503,36 +556,33 @@ select {
   height: 32px;
   border: 0;
   border-radius: var(--radius-md);
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 .play {
   background: var(--primary);
   color: var(--on-primary);
 }
+.play svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
 .stop {
   background: var(--danger-soft);
-  color: #b91c1c;
+}
+.stop i {
+  width: 8px;
+  height: 8px;
+  background: #b91c1c;
+  display: block;
 }
 .more {
   background: transparent;
   color: var(--text-2);
-}
-.retry {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 8px;
-  border: 0;
-  background: transparent;
-  color: var(--danger-text);
-  font-size: var(--fs-caption);
-}
-.mark {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--danger);
+  font-size: 16px;
 }
 .menu {
   position: absolute;
