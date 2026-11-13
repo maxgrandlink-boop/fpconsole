@@ -10,13 +10,15 @@
 
 | 截图 | 内容 |
 | --- | --- |
-| `screenshots/main-1440.png` | 主界面：快速创建一行，环境列表，左下「网络正常」 |
-| `screenshots/more-settings-1440.png` | 「更多设置」展开：代理线路和指纹配置 |
-| `screenshots/modal-view-1440.png` | 查看环境弹窗，人设锁定只读 |
+| `screenshots/main-1440.png` | 深色主界面。多开 3 个的结果里有一行异常，时间在名称下 |
+| `screenshots/main-light.png` | 同一主界面的浅色皮肤 |
+| `screenshots/more-settings-1440.png` | 「更多设置」只留代理线路 |
+| `screenshots/modal-view-1440.png` | 查看环境，指纹是只读摘要 |
 | `screenshots/loading-1440.png` | 「创建中…」和列表骨架 |
 | `screenshots/error-list-1440.png` | 列表加载失败 |
-| `screenshots/error-start-1440.png` | toast「该环境已在运行」 |
+| `screenshots/error-start-1440.png` | 启动失败：异常行可重试 |
 | `screenshots/error-network-1440.png` | 左下「网络异常」 |
 | `screenshots/error-proxy-1440.png` | 代理连接失败，历史里仍区分合格 / 不合格 |
+| `screenshots/settings-theme-1440.png` | 系统设置里的深色 / 浅色开关 |
 
 字体文件（SIL OFL）在 `fonts/`，只给效果图离线用。

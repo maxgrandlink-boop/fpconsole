@@ -24,7 +24,7 @@
     </div>
     <section class="card create" aria-label="快速创建环境">
       <div class="create-hd">
-        <div><h1>快速创建环境</h1><p>指纹配置将随人设永久锁定</p></div>
+        <div><h1>快速创建环境</h1><p>每个环境的指纹在创建时随机生成并锁定</p></div>
         <button class="linkish" type="button" aria-expanded="false">更多设置 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
       </div>
       <div class="create-row">
@@ -40,64 +40,92 @@
           <button class="select" type="button"><span class="val">加利福尼亚州</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         </div>
         <div class="field"><div class="lbl">多开数量</div>
-          <button class="select" type="button"><span class="val">1</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button class="select" type="button"><span class="val">3</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         </div>
         <div class="field"><label for="url">启动网址（可选）</label>
-          <input class="input" id="url" placeholder="留空则不附加" value="">
+          <input class="input" id="url" value="https://www.example.com">
         </div>
         <div class="field"><div class="lbl" aria-hidden="true">&nbsp;</div><button class="btn btn-primary" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>创建并启动</button></div>
       </div>
       
     </section><section class="card list" aria-label="环境列表">
       <div class="list-hd"><div class="tabs" role="tablist">
-      <button class="tab on" type="button">全部 <span class="n">2</span></button>
-      <button class="tab " type="button"><i></i>运行中 <span class="n">1</span></button>
+      <button class="tab on" type="button">全部 <span class="n">6</span></button>
+      <button class="tab " type="button"><i></i>运行中 <span class="n">3</span></button>
       <button class="tab " type="button"><i></i>已关闭 <span class="n">1</span></button>
-      <button class="tab " type="button"><i></i>已过期 <span class="n">0</span></button>
+      <button class="tab " type="button"><i></i>已过期 <span class="n">1</span></button>
     </div><div class="tools">
       <label class="search"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="请输入关键词" aria-label="搜索环境"></label>
       <button class="btn btn-sm" type="button">批量操作 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
       <button class="icon-btn" type="button" aria-label="刷新" style="border:1px solid var(--border-subtle)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.2-5.5"/><path d="M20 4v5h-5"/></svg></button>
     </div></div>
       <div class="table-wrap"><table>
-      <colgroup><col class="c-chk"><col><col class="c-sys"><col class="c-region"><col class="c-ip"><col class="c-asn"><col class="c-status"><col class="c-time"><col class="c-ops"></colgroup>
+      <colgroup><col class="c-chk"><col><col class="c-sys"><col class="c-region"><col class="c-ip"><col class="c-asn"><col class="c-status"><col class="c-ops"></colgroup>
       <thead><tr>
         <th><input type="checkbox" aria-label="全选"></th>
         <th>环境名称</th><th>系统 / 浏览器</th><th>地区</th><th>代理 IP</th><th>ASN / ISP</th>
-        <th>状态</th><th>最后使用</th><th>操作</th>
+        <th>状态</th><th>操作</th>
       </tr></thead>
       <tbody>
         <tr class="running">
           <td><input type="checkbox" aria-label="选择 us-la-slot1"></td>
-          <td><div class="name"><span class="pin" title="置顶"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 5 3 3v2H7v-2l3-3z"/><path d="M12 14v7"/></svg></span>us-la-slot1 <button class="star on" type="button" aria-label="取消星标" aria-pressed="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor;stroke:none"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div></td>
+          <td><div class="name"><span class="pin" title="置顶"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 5 3 3v2H7v-2l3-3z"/><path d="M12 14v7"/></svg></span>us-la-slot1 <button class="star on" type="button" aria-label="取消星标" aria-pressed="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor;stroke:none"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">11-12 10:24</div></td>
           <td class="mono">Win10 · 155</td>
-          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true">
-<rect width="19" height="13" fill="#B22234"/>
-<rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/>
-<rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/>
-<rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/>
-</svg>美国-洛杉矶</div></td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国-洛杉矶</div></td>
           <td class="mono">71.219.34.18</td>
-          <td class="muted">—</td>
+          <td>AS20115 / Charter</td>
           <td><span class="pill pill-run"><i></i>运行中</span></td>
-          <td class="mono">11-12 10:24</td>
           <td><div class="ops"><button class="btn btn-text btn-sm" type="button">打开</button><button class="btn btn-text btn-sm" type="button">关闭</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
         </tr>
-        <tr>
+<tr class="">
           <td><input type="checkbox" aria-label="选择 us-la-slot2"></td>
-          <td><div class="name">us-la-slot2 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div></td>
+          <td><div class="name">us-la-slot2 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">11-13 09:41</div></td>
           <td class="mono">Win10 · 153</td>
-          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true">
-<rect width="19" height="13" fill="#B22234"/>
-<rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/>
-<rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/>
-<rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/>
-</svg>美国-纽约</div></td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国-纽约</div></td>
           <td class="mono">98.42.67.11</td>
-          <td class="muted">—</td>
+          <td>AS7018 / AT&amp;T</td>
           <td><span class="pill pill-stop"><i></i>已关闭</span></td>
-          <td class="mono">11-13 09:41</td>
           <td><div class="ops"><button class="btn btn-text btn-sm" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>打开</button><button class="btn btn-danger btn-sm" type="button">删除</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
+        </tr>
+<tr class="running">
+          <td><input type="checkbox" aria-label="选择 us-la-slot3"></td>
+          <td><div class="name">us-la-slot3 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">11-13 14:02</div></td>
+          <td class="mono">Win10 · 156</td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国-洛杉矶</div></td>
+          <td class="mono">76.89.201.14</td>
+          <td>AS20115 / Charter</td>
+          <td><span class="pill pill-run"><i></i>运行中</span></td>
+          <td><div class="ops"><button class="btn btn-text btn-sm" type="button">打开</button><button class="btn btn-text btn-sm" type="button">关闭</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
+        </tr>
+<tr class="bad">
+          <td><input type="checkbox" aria-label="选择 us-la-slot4"></td>
+          <td><div class="name">us-la-slot4 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">11-13 14:02</div></td>
+          <td class="mono">Win10 · 154</td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国-洛杉矶</div></td>
+          <td class="mono">12.119.84.203</td>
+          <td>AS7018 / AT&amp;T</td>
+          <td><span class="pill pill-bad"><i></i>异常</span></td>
+          <td><div class="ops"><button class="btn btn-text btn-sm" type="button">重试</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
+        </tr>
+<tr class="running">
+          <td><input type="checkbox" aria-label="选择 us-la-slot5"></td>
+          <td><div class="name">us-la-slot5 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">11-13 14:03</div></td>
+          <td class="mono">Win10 · 152</td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国-洛杉矶</div></td>
+          <td class="mono">24.16.88.41</td>
+          <td>AS7922 / Comcast</td>
+          <td><span class="pill pill-run"><i></i>运行中</span></td>
+          <td><div class="ops"><button class="btn btn-text btn-sm" type="button">打开</button><button class="btn btn-text btn-sm" type="button">关闭</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
+        </tr>
+<tr class="">
+          <td><input type="checkbox" aria-label="选择 sg-slot1"></td>
+          <td><div class="name">sg-slot1 <button class="star" type="button" aria-label="设为星标" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.4 6 .9-4.3 4.2 1 5.9L12 16.8 6.7 19.4l1-5.9L3.4 9.3l6-.9z"/></svg></button></div><div class="when">10-02 08:11</div></td>
+          <td class="mono">Win10 · 151</td>
+          <td><div class="region"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="6.5" fill="#EF3340"/><rect y="6.5" width="19" height="6.5" fill="#fff"/><circle cx="4.6" cy="3.6" r="1.7" fill="#fff"/><circle cx="5.3" cy="3.6" r="1.35" fill="#EF3340"/></svg>新加坡</div></td>
+          <td class="mono">128.199.85.7</td>
+          <td>AS16276 / Datacamp</td>
+          <td><span class="pill pill-stop"><i></i>已过期</span></td>
+          <td><div class="ops"><button class="btn btn-danger btn-sm" type="button">删除</button><button class="btn btn-sm" type="button">更多 <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div></td>
         </tr>
       </tbody>
     </table></div>

@@ -211,7 +211,10 @@ td { padding: 12px 8px; border-bottom: 1px solid var(--border-subtle); vertical-
 tr:hover td { background: var(--surface-muted); }
 tr.running td { background: var(--success-soft); }
 tr.running td:first-child { box-shadow: inset 2px 0 0 var(--success); }
+tr.bad td { background: var(--danger-soft); }
+tr.bad td:first-child { box-shadow: inset 2px 0 0 var(--danger-text); }
 .name { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: var(--fs-body); color: var(--text); }
+.when { color: var(--text-3); font-size: var(--fs-caption); margin-top: 2px; }
 .pin { color: var(--warning); }
 .star { background: none; border: 0; padding: 0; color: var(--text-disabled); display: inline-flex; }
 .star.on { color: var(--star); }
@@ -222,6 +225,9 @@ tr.running td:first-child { box-shadow: inset 2px 0 0 var(--success); }
 .pill-stop { color: var(--text-3); }
 .pill-wait { color: var(--info); }
 .pill-bad { color: var(--danger-text); }
+.summary { display: grid; grid-template-columns: 88px 1fr; gap: 8px 16px; margin: 0; }
+.summary dt { color: var(--text-3); font-size: var(--fs-caption); }
+.summary dd { margin: 0; color: var(--text); }
 .ops { display: flex; align-items: center; gap: 2px; }
 .ops .btn-text, .ops .btn-danger { height: 28px; }
 .spinner {

@@ -22,7 +22,15 @@
       <button class="icon-btn" type="button" aria-label="通知，2 条未读"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 7 2 7 2 7H4s2 0 2-7"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><span class="badge-count">2</span></button>
       <span class="mock">MOCK</span>
     </div>
-    <section class="page"><h1>系统设置</h1><p class="muted" style="margin-top:-8px">路径设置，保存在本机，重启后仍在。</p>
+    <section class="page"><h1>系统设置</h1><p class="muted" style="margin-top:-8px">外观和路径都只保存在本机。</p>
+<div class="field" style="max-width:360px;margin-bottom:20px">
+  <div class="lbl">外观</div>
+  <div class="seg" role="radiogroup" aria-label="外观">
+    <button class="on" type="button" aria-pressed="true">深色</button>
+    <button type="button" aria-pressed="false">浅色</button>
+  </div>
+  <p class="hint">点选后立即切换。默认深色。选择写在本机，下次打开仍用上次的皮肤。</p>
+</div>
 <div class="set-grid">
   <div class="field"><label>browser_exe</label><input class="input mono" value="D:\fpconsole-kit\browser\chrome.exe"></div>
   <div class="field"><label>kit_dir</label><input class="input mono" value="D:\fpconsole-kit"></div>
