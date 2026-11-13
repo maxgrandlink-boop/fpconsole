@@ -7,6 +7,7 @@
 3. [tokens.css](tokens.css) — 效果图用的 CSS 变量
 4. [mockups/](mockups/) — 纯静态 HTML，无外部网络资源
 5. [screenshots/](screenshots/) — 1440×900 截图
+6. [brand/v2/](brand/v2/README.md) — PANDA Browser 品牌候选（冰莓 / 海盐 / 青柠），待选定
 
 | 截图 | 内容 |
 | --- | --- |

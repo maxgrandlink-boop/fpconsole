@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="limeS" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#AACC00"/>
+      <stop offset="0.5" stop-color="#80ED99"/>
+      <stop offset="1" stop-color="#57CC99"/>
+    </linearGradient>
+    <radialGradient id="limeSs" cx="34%" cy="28%" r="72%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="url(#limeS)"/>
+  <circle cx="32" cy="32" r="31" fill="url(#limeSs)"/>
+  
+    <circle cx="17.4" cy="17" r="9.6" fill="#1A1A1A"/>
+    <circle cx="46.6" cy="17" r="9.6" fill="#1A1A1A"/>
+    <circle cx="32" cy="37.2" r="20.4" fill="#FFFCF8"/>
+    
+    
+    <ellipse cx="21.6" cy="36.6" rx="8.3" ry="10.1" transform="rotate(-28 21.6 36.6)" fill="#1A1A1A"/>
+    <ellipse cx="42.4" cy="36.6" rx="8.3" ry="10.1" transform="rotate(28 42.4 36.6)" fill="#1A1A1A"/>
+    
+    <ellipse cx="32" cy="46.8" rx="3.3" ry="2.35" fill="#1A1A1A"/>
+    
+</svg>

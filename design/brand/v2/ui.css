@@ -1,0 +1,35 @@
+/* Brand-layer polish. Layout stays the shared mockup. Gradients only on the logo, the primary button, the selected mark, and the card hairline. */
+.brand img { width: 28px; height: 28px; display: block; }
+.brand-name { letter-spacing: 0.08em; }
+.card { box-shadow: var(--shadow-sm); }
+.create { position: relative; }
+.create::before {
+  content: "";
+  position: absolute;
+  left: 22px; right: 22px; top: 0; height: 2px;
+  background-image: var(--mark-gradient);
+  border-radius: 0 0 2px 2px;
+}
+.btn-primary {
+  background-image: var(--btn-gradient);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 16px var(--primary-glow);
+}
+.btn-primary:hover {
+  background-image: var(--btn-gradient-hover);
+  background-color: var(--primary-hover);
+  border-color: transparent;
+}
+.nav a.active { position: relative; }
+.nav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 10px; bottom: 10px; width: 2px;
+  border-radius: 2px;
+  background-image: var(--mark-gradient);
+}
+tr.warn td { background: var(--warning-soft); }
+tr.warn td:first-child { box-shadow: inset 2px 0 0 var(--warning); }
+.pill-warn { color: var(--warning-text); font-weight: 600; }
