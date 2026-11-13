@@ -344,9 +344,10 @@ onMounted(async () => {
                 <rect x="1" y="9" width="6" height="6" />
                 <rect x="9" y="9" width="6" height="6" />
               </svg>
-              <svg v-else class="os-ico" viewBox="0 0 16 16" aria-hidden="true">
-                <path d="M9.2 2.2c.7-.8 1.8-.7 2.3.1-.9.3-1.6.8-2.3-.1z" />
-                <circle cx="8" cy="9.2" r="5" />
+              <svg v-else class="os-ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8s-1.8-.8-3-.8c-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.7-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.4-.9-2.4-3.8zM14.6 6.2c.6-.8 1.1-1.9.9-3-1 .1-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.5 2.9-1.3z"
+                />
               </svg>
               {{ persona.os.name }} {{ persona.os.version }}
             </span>
@@ -372,9 +373,11 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  min-width: 0;
   min-height: 0;
 }
 .card {
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
@@ -387,16 +390,22 @@ h1 {
 }
 .row {
   display: grid;
-  grid-template-columns: 140px 140px 160px 110px minmax(160px, 1fr) auto;
-  gap: var(--space-lg);
+  grid-template-columns:
+    minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 1.6fr)
+    auto;
+  gap: var(--space-md);
   align-items: end;
 }
 label {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  min-width: 0;
   color: var(--text-2);
   font-size: var(--fs-caption);
+}
+.row > label {
+  overflow: hidden;
 }
 input,
 select {
@@ -407,6 +416,16 @@ select {
   color: var(--text);
   padding: 0 var(--space-md);
 }
+.row input,
+.row select {
+  width: 100%;
+  min-width: 0;
+}
+input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+}
 .go {
   height: var(--ctrl);
   padding: 0 var(--space-lg);
@@ -415,6 +434,7 @@ select {
   background: var(--primary);
   color: var(--on-primary);
   font-weight: 600;
+  white-space: nowrap;
 }
 .go:disabled {
   color: var(--text-disabled);
@@ -491,6 +511,7 @@ select {
   gap: 4px;
   border-left: 1px solid var(--border-subtle);
   align-self: stretch;
+  overflow: hidden;
 }
 .title-col {
   justify-content: flex-start;
@@ -530,6 +551,13 @@ select {
   display: flex;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
+}
+.host {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .name span {
   display: block;
