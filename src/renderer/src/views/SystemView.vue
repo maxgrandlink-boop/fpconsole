@@ -12,7 +12,6 @@ function choose(mode: ThemeMode): void {
 <template>
   <section class="page">
     <h1>系统设置</h1>
-    <p class="muted">外观立即切换。本阶段只留在内存里，刷新后回到深色。</p>
     <div class="lbl">外观</div>
     <div class="seg" role="radiogroup" aria-label="外观">
       <button
@@ -41,11 +40,6 @@ function choose(mode: ThemeMode): void {
   margin: 0 0 var(--space-lg);
   font-size: var(--fs-title);
   font-weight: 600;
-}
-.muted {
-  margin: calc(var(--space-md) * -1) 0 var(--space-xl);
-  color: var(--text-3);
-  font-size: var(--fs-caption);
 }
 .lbl {
   color: var(--text-2);

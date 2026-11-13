@@ -29,7 +29,7 @@ src/renderer/src/
   layouts/AppShell.vue    两栏壳：216px 侧栏 + 内容区
   router/                 hash 路由
   stores/app.ts           产品名和版本
-  stores/theme.ts         深色 / 浅色，只在内存
+  stores/theme.ts         深色 / 浅色，localStorage 键 fpconsole-theme
   theme/                  tokens.css、naive-theme.ts、index.ts
   views/                  页面。环境列表和代理页仍是空占位
 legacy/                   旧原型，只留作参考
@@ -39,7 +39,7 @@ legacy/                   旧原型，只留作参考
 
 默认深色。令牌在 `src/renderer/src/theme/tokens.css`（`:root` 深色，`[data-theme="light"]` 浅色）。Naive 的两套 `GlobalThemeOverrides` 在 `theme/naive-theme.ts`。页面不要另写颜色，用这些 CSS 变量。
 
-切换走 Pinia `useThemeStore().setMode('dark' | 'light')`。`App.vue` 会同时改 `NConfigProvider`（深色带 `darkTheme`，浅色只覆盖 light overrides）和 `<html data-theme>`。系统设置页有这个开关。刷新后回到深色，没有持久化。
+切换走 Pinia `useThemeStore().setMode('dark' | 'light')`，并写入 `localStorage` 键 `fpconsole-theme`。启动时读取，读不到或值不是 `dark` / `light` 就用深色。`App.vue` 会同时改 `NConfigProvider`（深色带 `darkTheme`，浅色只覆盖 light overrides）和 `<html data-theme>`。系统设置页有这个开关。
 
 ## 布局和路由
 
