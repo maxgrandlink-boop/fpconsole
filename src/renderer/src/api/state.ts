@@ -289,7 +289,7 @@ export const state: {
       fp: fpStd(),
       proxy: {
         uri: 'http://client-demo_area-jp_life-120_session-jp01ee44ff:demo-pass@proxy.example.com:9000',
-        ip: null,
+        ip: '133.242.10.28',
         type: '静态',
         region: '日本',
         qualified: null,

@@ -147,7 +147,7 @@ onMounted(async () => {
   line-height: var(--lh-tight);
 }
 .brand-sub {
-  color: var(--text-3);
+  color: var(--accent);
   font-size: var(--fs-caption);
 }
 .nav {

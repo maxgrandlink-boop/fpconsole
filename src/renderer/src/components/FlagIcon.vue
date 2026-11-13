@@ -64,5 +64,6 @@ defineProps<FlagIconProps>();
   display: block;
   flex: 0 0 auto;
   border-radius: 1px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text-2) 40%, transparent);
 }
 </style>

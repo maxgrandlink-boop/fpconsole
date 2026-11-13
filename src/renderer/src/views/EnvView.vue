@@ -496,7 +496,8 @@ select {
   align-self: stretch;
 }
 .title-col {
-  gap: var(--space-md);
+  justify-content: flex-start;
+  gap: var(--space-sm);
 }
 .env-row {
   min-height: 72px;
@@ -510,7 +511,7 @@ select {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  flex: 1;
+  flex: 0 0 auto;
 }
 .name strong {
   font-size: var(--fs-body);
@@ -546,7 +547,6 @@ select {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-left: auto;
   flex: 0 0 auto;
 }
 .play,
