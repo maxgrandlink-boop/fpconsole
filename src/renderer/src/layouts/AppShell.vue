@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { getNetworkStatus } from '../api/network';
+import PandaMark from '../components/PandaMark.vue';
 import { useAppStore } from '../stores/app';
 
 interface ShellNav {
@@ -40,10 +41,10 @@ onMounted(async () => {
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <div class="mark">fp</div>
+        <PandaMark :size="28" />
         <div>
-          <div class="brand-name">{{ appStore.name }}</div>
-          <div class="brand-sub">实例管理台</div>
+          <div class="brand-name">PANDA</div>
+          <div class="brand-sub">指纹浏览器</div>
         </div>
       </div>
       <nav class="nav" aria-label="功能">
@@ -197,7 +198,7 @@ onMounted(async () => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--success);
+  background: var(--accent);
   display: block;
 }
 .net.bad {

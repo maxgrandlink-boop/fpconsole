@@ -1,6 +1,6 @@
 # fpconsole
 
-浏览器实例管理台。Electron 壳 + Vue 3 渲染进程。数据是内存 mock：不落盘，不启动浏览器，不打包，不访问网络。快速创建卡片和环境列表由业务页实现，这个仓库目前只放框架。
+窗口标题是 PANDA Browser。Electron 壳 + Vue 3 渲染进程。业务数据仍是内存 mock：不落盘，不启动浏览器，不打包，不访问网络。`#/env` 已接上快速创建和环境列表。
 
 ## 跑起来
 
@@ -82,7 +82,7 @@ const results = await generatePersona({
 });
 ```
 
-`count` 是 1 到 10 的整数。slot 按 `code` 续号（已有 `us-la-slot2` 时得到 `slot3` 起）。每个环境各自 `generateFingerprint()`。代理由 `assignProxy(country, region)` 分配，参数是 `Country` 和 `Region | null`。`ipCheck.enabled` 时对这条代理做假检测：`strict` 不合格则该条 `status` 为 `error` 并带 `message`，其余继续；`loose` 照常启动，不合格写在 `warning`。`ipipCheck` 不合格只写 `warning`。严格/宽松的真实规则还没定。某一条启动失败时该环境留下，用 `retryStart(id)` 再启动这一条。
+`count` 是 1 到 10 的整数。slot 按 `code` 续号（已有 `us-la-slot2` 时得到 `slot3` 起）。每个环境各自 `generateFingerprint()`。代理由 `assignProxy(country, region)` 分配，参数是 `Country` 和 `Region | null`。环境状态只有 `running`、`closed`、`ip_fail`。`ipCheck` 或 `ipipCheck` 失败都记 `ip_fail`（严格/宽松的真实区别还没定），用 `retryStart(id)` 再试。`getEnvStatusCounts()` 返回 `{ all, running, closed, ip_fail }`。
 
 `window.fp`：`launchBrowser(slot)`、`stopBrowser(slot)`、`focusBrowser(slot)`、`getSettings()`、`saveSettings()`。已在运行时「打开」走 `focusBrowser`，它只返回假数据，不把窗口真的拉到前面。
 

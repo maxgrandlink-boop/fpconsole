@@ -1,3 +1,582 @@
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import type { Country, Line, LineId, Region } from '../api/places';
+import { getCountries, getLines } from '../api/places';
+import {
+  deletePersona,
+  generatePersona,
+  getEnvStatusCounts,
+  getPersonas,
+  retryStart,
+  startByPersona,
+  stopByPersona,
+  toggleStar,
+} from '../api/env';
+import type { EnvStatus, EnvStatusCounts, Persona } from '../api/env';
+import PandaMark from '../components/PandaMark.vue';
+import StatusDot from '../components/StatusDot.vue';
+
+interface CreateForm {
+  line: LineId;
+  country: string;
+  region: string | null;
+  count: number;
+  startUrl: string;
+  ipEnabled: boolean;
+  ipMode: 'strict' | 'loose';
+  ipip: boolean;
+}
+
+type TabKey = 'all' | EnvStatus;
+
+const lines = ref<Line[]>([]);
+const countries = ref<Country[]>([]);
+const personas = ref<Persona[]>([]);
+const counts = ref<EnvStatusCounts>({ all: 0, running: 0, closed: 0, ip_fail: 0 });
+const keyword = ref('');
+const tab = ref<TabKey>('all');
+const busy = ref(false);
+const formError = ref('');
+const menuId = ref<string | null>(null);
+const notes = ref<Record<string, string>>({});
+const editingNote = ref<string | null>(null);
+const form = ref<CreateForm>({
+  line: 'america',
+  country: 'us',
+  region: 'la',
+  count: 1,
+  startUrl: '',
+  ipEnabled: false,
+  ipMode: 'strict',
+  ipip: false,
+});
+
+const currentCountry = computed(() =>
+  countries.value.find((item) => item.code === form.value.country),
+);
+const regions = computed<Region[]>(() => currentCountry.value?.regions ?? []);
+
+const visible = computed(() => {
+  const kw = keyword.value.trim().toLowerCase();
+  return personas.value.filter((persona) => {
+    if (tab.value !== 'all' && persona.status !== tab.value) return false;
+    if (!kw) return true;
+    const proxy = persona.proxy;
+    const hay = [
+      persona.slot,
+      persona.name,
+      persona.tz,
+      persona.screen,
+      persona.ua_short,
+      proxy.ip,
+      proxy.region,
+      persona.group,
+    ]
+      .join(' ')
+      .toLowerCase();
+    return hay.includes(kw);
+  });
+});
+
+const tabs: { key: TabKey; label: string }[] = [
+  { key: 'all', label: '全部' },
+  { key: 'running', label: '运行中' },
+  { key: 'closed', label: '已关闭' },
+  { key: 'ip_fail', label: 'IP 不通' },
+];
+
+function countOf(key: TabKey): number {
+  return key === 'all' ? counts.value.all : counts.value[key];
+}
+
+async function loadCountries(line: LineId): Promise<void> {
+  countries.value = await getCountries(line);
+  const first = countries.value[0];
+  if (!first) return;
+  if (!countries.value.some((item) => item.code === form.value.country)) {
+    form.value.country = first.code;
+  }
+  syncRegion();
+}
+
+function syncRegion(): void {
+  const list = currentCountry.value?.regions;
+  if (!list || list.length === 0) {
+    form.value.region = null;
+    return;
+  }
+  if (!list.some((item) => item.code === form.value.region)) {
+    form.value.region = list[0]?.code ?? null;
+  }
+}
+
+async function reload(): Promise<void> {
+  const [rows, nextCounts] = await Promise.all([getPersonas(), getEnvStatusCounts()]);
+  personas.value = rows;
+  counts.value = nextCounts;
+}
+
+async function submit(): Promise<void> {
+  formError.value = '';
+  busy.value = true;
+  try {
+    await generatePersona({
+      line: form.value.line,
+      country: form.value.country,
+      region: form.value.region,
+      count: Number(form.value.count),
+      start_url: form.value.startUrl,
+      ipCheck: { enabled: form.value.ipEnabled, mode: form.value.ipMode },
+      ipipCheck: form.value.ipip,
+    });
+    await reload();
+  } catch (error) {
+    formError.value = error instanceof Error ? error.message : String(error);
+  } finally {
+    busy.value = false;
+  }
+}
+
+async function openEnv(persona: Persona): Promise<void> {
+  try {
+    await startByPersona(persona.id);
+    await reload();
+  } catch (error) {
+    formError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
+async function closeEnv(persona: Persona): Promise<void> {
+  try {
+    await stopByPersona(persona.id);
+    await reload();
+  } catch (error) {
+    formError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
+async function retry(persona: Persona): Promise<void> {
+  try {
+    await retryStart(persona.id);
+    await reload();
+  } catch (error) {
+    formError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
+async function onStar(persona: Persona): Promise<void> {
+  menuId.value = null;
+  await toggleStar(persona.id);
+  await reload();
+}
+
+async function onDelete(persona: Persona): Promise<void> {
+  menuId.value = null;
+  if (!window.confirm(`确定删除「${persona.slot}」？`)) return;
+  try {
+    await deletePersona(persona.id);
+    await reload();
+  } catch (error) {
+    formError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
+function hostOf(uri: string): string {
+  const matched = uri.match(/^(?:[a-z0-9]+:\/\/)?(?:[^@/?#]+@)?([^/?#]+)/i);
+  return matched?.[1] ?? uri;
+}
+
+function fmtTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${p(date.getMonth() + 1)}-${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}`;
+}
+
+watch(
+  () => form.value.line,
+  (line) => {
+    void loadCountries(line);
+  },
+);
+
+watch(
+  () => form.value.country,
+  () => syncRegion(),
+);
+
+onMounted(async () => {
+  lines.value = await getLines();
+  await loadCountries(form.value.line);
+  await reload();
+  window.addEventListener('click', () => {
+    menuId.value = null;
+  });
+});
+</script>
+
 <template>
-  <div></div>
+  <div class="env">
+    <section class="card">
+      <h1>快速创建环境</h1>
+      <form class="row" @submit.prevent="submit">
+        <label>
+          线路
+          <select v-model="form.line">
+            <option v-for="line in lines" :key="line.id" :value="line.id">{{ line.name }}</option>
+          </select>
+        </label>
+        <label>
+          国家
+          <select v-model="form.country">
+            <option v-for="country in countries" :key="country.code" :value="country.code">
+              {{ country.name }}
+            </option>
+          </select>
+        </label>
+        <label>
+          州/省
+          <select v-model="form.region" :disabled="regions.length === 0">
+            <option v-if="regions.length === 0" :value="null">无</option>
+            <option v-for="region in regions" :key="region.code" :value="region.code">
+              {{ region.name }}
+            </option>
+          </select>
+        </label>
+        <label>
+          多开数量
+          <input v-model.number="form.count" type="number" min="1" max="10" step="1" />
+        </label>
+        <label class="grow">
+          启动网址
+          <input v-model.trim="form.startUrl" type="text" placeholder="可选，http:// 或 https://" />
+        </label>
+        <button class="go" type="submit" :disabled="busy">
+          {{ busy ? '创建中…' : '创建并启动' }}
+        </button>
+      </form>
+      <div class="checks">
+        <label class="check">
+          <input v-model="form.ipEnabled" type="checkbox" />
+          IP 检测
+        </label>
+        <select v-model="form.ipMode" :disabled="!form.ipEnabled">
+          <option value="strict">严格</option>
+          <option value="loose">宽松</option>
+        </select>
+        <label class="check">
+          <input v-model="form.ipip" type="checkbox" />
+          IPIP 检测
+        </label>
+      </div>
+      <p v-if="formError" class="err" role="alert">{{ formError }}</p>
+    </section>
+
+    <section class="card list">
+      <div class="tabs">
+        <button
+          v-for="item in tabs"
+          :key="item.key"
+          type="button"
+          :class="{ on: tab === item.key }"
+          @click="tab = item.key"
+        >
+          {{ item.label }} {{ countOf(item.key) }}
+        </button>
+        <input v-model="keyword" class="search" placeholder="请输入关键词" />
+      </div>
+      <div v-if="visible.length === 0" class="empty">没有符合条件的环境</div>
+      <div v-else class="rows">
+        <article v-for="persona in visible" :key="persona.id" class="env-row">
+          <input type="checkbox" :aria-label="`选择 ${persona.slot}`" />
+          <PandaMark :size="28" />
+          <div class="name">
+            <strong>{{ persona.slot }}</strong>
+            <span>{{ fmtTime(persona.created_at) }}</span>
+          </div>
+          <div class="ops" @click.stop>
+            <button
+              v-if="persona.status === 'running'"
+              class="stop"
+              type="button"
+              aria-label="停止"
+              @click="closeEnv(persona)"
+            >
+              ■
+            </button>
+            <button
+              v-else-if="persona.status === 'ip_fail'"
+              class="retry"
+              type="button"
+              @click="retry(persona)"
+            >
+              <i class="mark" />IP 不通 · 重试
+            </button>
+            <button v-else class="play" type="button" aria-label="打开" @click="openEnv(persona)">
+              ▶
+            </button>
+            <button class="more" type="button" aria-label="更多" @click="menuId = persona.id">
+              ⋮
+            </button>
+            <div v-if="menuId === persona.id" class="menu">
+              <button type="button" @click="onStar(persona)">
+                {{ persona.starred ? '取消星标' : '星标' }}
+              </button>
+              <button type="button" @click="onDelete(persona)">删除</button>
+            </div>
+          </div>
+          <div class="desc">
+            <button
+              v-if="editingNote !== persona.id && !notes[persona.id]"
+              class="add"
+              type="button"
+              @click="editingNote = persona.id"
+            >
+              添加
+            </button>
+            <input
+              v-else
+              :value="notes[persona.id] ?? ''"
+              @change="
+                notes[persona.id] = ($event.target as HTMLInputElement).value;
+                editingNote = null;
+              "
+            />
+          </div>
+          <div class="proxy">
+            <span class="host">{{ hostOf(persona.proxy.uri) }}</span>
+            <span class="ip">
+              <svg class="flag" viewBox="0 0 16 12" aria-hidden="true">
+                <rect
+                  width="16"
+                  height="12"
+                  :fill="persona.country === 'us' ? '#3C3B6E' : '#E8EEF6'"
+                />
+                <rect v-if="persona.country === 'us'" y="6" width="16" height="1" fill="#fff" />
+                <rect v-if="persona.country === 'us'" y="8" width="16" height="1" fill="#B22234" />
+              </svg>
+              <StatusDot :tone="persona.status === 'ip_fail' ? 'fail' : 'ok'" />
+              {{ persona.proxy.ip || '—' }}
+            </span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
 </template>
+
+<style scoped>
+.env {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  min-height: 0;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg) var(--space-xl);
+}
+h1 {
+  margin: 0 0 var(--space-lg);
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+.row {
+  display: grid;
+  grid-template-columns: 140px 140px 160px 110px minmax(160px, 1fr) auto;
+  gap: var(--space-lg);
+  align-items: end;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+input,
+select {
+  height: var(--ctrl);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-sunken);
+  color: var(--text);
+  padding: 0 var(--space-md);
+}
+.go {
+  height: var(--ctrl);
+  padding: 0 var(--space-lg);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+}
+.go:disabled {
+  color: var(--text-disabled);
+  background: var(--surface-muted);
+}
+.checks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+.check {
+  flex-direction: row;
+  align-items: center;
+  color: var(--text);
+  font-size: var(--fs-body);
+}
+.err {
+  margin: var(--space-md) 0 0;
+  color: var(--danger-text);
+  font-size: var(--fs-caption);
+}
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.tabs button {
+  height: 28px;
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-2);
+}
+.tabs button.on {
+  background: var(--primary-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.search {
+  margin-left: auto;
+  width: 220px;
+}
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+.env-row {
+  display: grid;
+  grid-template-columns: 28px 28px minmax(180px, 1.2fr) auto minmax(80px, 0.7fr) minmax(200px, 1fr);
+  gap: var(--space-lg);
+  align-items: center;
+  min-height: 72px;
+  padding: var(--space-md) var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+}
+.env-row:hover {
+  background: var(--primary-soft);
+}
+.name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.name strong {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.name span,
+.host,
+.ip {
+  color: var(--accent);
+  font-size: var(--fs-caption);
+}
+.ops {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.play,
+.stop,
+.more {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+}
+.play {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.stop {
+  background: var(--danger-soft);
+  color: #b91c1c;
+}
+.more {
+  background: transparent;
+  color: var(--text-2);
+}
+.retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--danger-text);
+  font-size: var(--fs-caption);
+}
+.mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+}
+.menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.menu button {
+  height: 32px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0 var(--space-md);
+}
+.add {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  padding: 0;
+}
+.proxy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.ip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flag {
+  width: 16px;
+  height: 12px;
+}
+.empty {
+  color: var(--text-3);
+  padding: var(--space-xl) 0;
+}
+</style>

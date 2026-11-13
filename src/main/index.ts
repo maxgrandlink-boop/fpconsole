@@ -46,7 +46,7 @@ function createWindow(): void {
     minWidth: 1024,
     minHeight: 700,
     autoHideMenuBar: true,
-    title: 'fpconsole 浏览器实例管理台',
+    title: 'PANDA Browser',
     webPreferences: {
       preload: join(root, '../preload/index.mjs'),
       contextIsolation: true,

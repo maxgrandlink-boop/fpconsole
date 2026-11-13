@@ -42,7 +42,7 @@ export interface PersonaProxy {
 }
 
 /** 列表状态。异常不进运行中/已关闭/已过期计数，但仍算在全部里。 */
-export type EnvStatus = 'running' | 'closed' | 'expired' | 'starting' | 'error';
+export type EnvStatus = 'running' | 'closed' | 'ip_fail';
 
 export interface Persona {
   id: string;
@@ -110,14 +110,13 @@ export interface CreateEnvResult {
   slot: string;
   status: EnvStatus;
   message?: string;
-  warning?: string;
 }
 
 export interface EnvStatusCounts {
   all: number;
   running: number;
   closed: number;
-  expired: number;
+  ip_fail: number;
 }
 
 export interface AssembleVars {
@@ -370,43 +369,36 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Crea
 
   const results: CreateEnvResult[] = [];
   for (const persona of created) {
-    const check = mockQuality(input);
-    if (check.blocked) {
-      persona.status = 'error';
+    const failed = mockQuality(input);
+    if (failed) {
+      persona.status = 'ip_fail';
       results.push({
         id: persona.id,
         slot: persona.slot,
-        status: 'error',
-        message: check.blocked,
-        ...(check.warning ? { warning: check.warning } : {}),
+        status: 'ip_fail',
+        message: failed,
       });
       continue;
     }
     try {
       await startByPersona(persona.id);
-      results.push({
-        id: persona.id,
-        slot: persona.slot,
-        status: 'running',
-        ...(check.warning ? { warning: check.warning } : {}),
-      });
+      results.push({ id: persona.id, slot: persona.slot, status: 'running' });
     } catch (error) {
       if (!(error instanceof ApiError && error.status === 409)) {
-        persona.status = 'error';
+        persona.status = 'ip_fail';
       }
       results.push({
         id: persona.id,
         slot: persona.slot,
         status: persona.status,
         message: error instanceof Error ? error.message : String(error),
-        ...(check.warning ? { warning: check.warning } : {}),
       });
     }
   }
   return results;
 }
 
-// TODO: 严格/宽松的真实判定规则未定。这里只按固定概率做假检测。
+// TODO: 严格/宽松的真实区别未定。目前 IP 检测或 IPIP 检测失败都记为 ip_fail。
 const CHECK_FAIL_RATE = 0.3;
 const CHECK_FAIL_REASONS = [
   '机房/Hosting 出口，且非美国（新加坡）',
@@ -418,21 +410,13 @@ function mockFailReason(): string | null {
   return CHECK_FAIL_REASONS[Math.floor(Math.random() * CHECK_FAIL_REASONS.length)] ?? null;
 }
 
-function mockQuality(input: GeneratePersonaInput): { blocked?: string; warning?: string } {
-  let blocked: string | undefined;
-  let warning: string | undefined;
+function mockQuality(input: GeneratePersonaInput): string | null {
   if (input.ipCheck.enabled) {
     const reason = mockFailReason();
-    if (reason) {
-      if (input.ipCheck.mode === 'strict') blocked = reason;
-      else warning = reason;
-    }
+    if (reason) return reason;
   }
-  if (input.ipipCheck) {
-    const reason = mockFailReason();
-    if (reason) warning = warning ? `${warning}；${reason}` : reason;
-  }
-  return { blocked, warning };
+  if (input.ipipCheck) return mockFailReason();
+  return null;
 }
 
 export async function retryStart(id: string): Promise<CreateEnvResult> {
@@ -443,11 +427,11 @@ export async function retryStart(id: string): Promise<CreateEnvResult> {
     return { id: persona.id, slot: persona.slot, status: 'running' };
   } catch (error) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 409)) throw error;
-    persona.status = 'error';
+    persona.status = 'ip_fail';
     return {
       id: persona.id,
       slot: persona.slot,
-      status: 'error',
+      status: 'ip_fail',
       message: error instanceof Error ? error.message : String(error),
     };
   }
@@ -459,7 +443,7 @@ export async function getEnvStatusCounts(): Promise<EnvStatusCounts> {
     all: state.personas.length,
     running: state.personas.filter((persona) => persona.status === 'running').length,
     closed: state.personas.filter((persona) => persona.status === 'closed').length,
-    expired: state.personas.filter((persona) => persona.status === 'expired').length,
+    ip_fail: state.personas.filter((persona) => persona.status === 'ip_fail').length,
   };
 }
 
@@ -508,7 +492,6 @@ export async function startByPersona(personaId: string): Promise<Instance> {
   const persona = findPersona(personaId);
   if (!persona) throw new ApiError(404, '环境不存在');
   if (runningInstancesOf(persona.id).length) throw new ApiError(409, '该环境已在运行');
-  persona.status = 'starting';
   await delay();
   const command = assembleCommand(persona, { proxy_uri: persona.proxy.uri });
   const instance: Instance = {
@@ -539,7 +522,7 @@ export async function stopByPersona(personaId: string): Promise<StopResult> {
     instance.stopped_at = nowIso();
     stopped += 1;
   }
-  if (stopped > 0 && persona.status !== 'expired') persona.status = 'closed';
+  if (stopped > 0) persona.status = 'closed';
   return { stopped };
 }
 

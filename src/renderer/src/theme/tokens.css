@@ -51,41 +51,25 @@
   --text-2: #cbd5e1;
   --text-3: #94a3b8;
   --text-disabled: #64748b;
-  --on-primary: #ffffff;
-  --on-success: #0f172a;
-  --on-warning: #0f172a;
+  --on-primary: #14210a;
   --on-danger: #0f172a;
 
   --border-subtle: #334155;
   --border: #64748b;
   --border-strong: #94a3b8;
 
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-pressed: #1e40af;
-  --primary-soft: rgba(37, 99, 235, 0.16);
+  --primary: #aacc00;
+  --primary-hover: #b6d414;
+  --primary-pressed: #96b400;
+  --primary-soft: #35412c;
+  --accent: #aacc00;
 
-  --success: #22c55e;
-  --success-text: #4ade80;
-  --success-soft: rgba(34, 197, 94, 0.14);
-
-  --warning: #f5a524;
-  --warning-text: #f5a524;
-  --warning-soft: rgba(245, 165, 36, 0.16);
-
-  --danger: #ef4444;
+  --danger: #f87171;
   --danger-text: #f87171;
-  --danger-soft: rgba(239, 68, 68, 0.14);
+  --danger-soft: #fee2e2;
 
-  --info: #38bdf8;
-  --info-soft: rgba(56, 189, 248, 0.14);
-
-  --focus: #93c5fd;
+  --focus: #e4f7a8;
   --ring: #f8fafc;
-  --star: #f5a524;
-  --mock: #fde68a;
-  --mock-bg: #3f2e0a;
-  --mock-border: #a16207;
 
   --space-xs: 2px;
   --space-sm: 4px;
@@ -136,34 +120,21 @@
   --text-2: #334155;
   --text-3: #475569;
   --text-disabled: #94a3b8;
-  --on-primary: #ffffff;
-  --on-success: #ffffff;
-  --on-warning: #0f172a;
-  --on-danger: #ffffff;
+  --on-primary: #14210a;
+  --on-danger: #7f1d1d;
   --border-subtle: #e2e8f0;
   --border: #64748b;
   --border-strong: #475569;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-pressed: #1e40af;
-  --primary-soft: rgba(37, 99, 235, 0.1);
-  --success: #15803d;
-  --success-text: #15803d;
-  --success-soft: rgba(21, 128, 61, 0.1);
-  --warning: #d97706;
-  --warning-text: #b45309;
-  --warning-soft: rgba(217, 119, 6, 0.12);
-  --danger: #dc2626;
-  --danger-text: #dc2626;
-  --danger-soft: rgba(220, 38, 38, 0.1);
-  --info: #0369a1;
-  --info-soft: rgba(3, 105, 161, 0.1);
-  --focus: #2563eb;
+  --primary: #aacc00;
+  --primary-hover: #96b400;
+  --primary-pressed: #7a9a00;
+  --primary-soft: #f0f6d1;
+  --accent: #3f6212;
+  --danger: #b91c1c;
+  --danger-text: #b91c1c;
+  --danger-soft: #fee2e2;
+  --focus: #3f6212;
   --ring: #1e293b;
-  --star: #d97706;
-  --mock: #92400e;
-  --mock-bg: #fef3c7;
-  --mock-border: #f59e0b;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.1);
   --shadow-lg: 0 16px 48px rgba(15, 23, 42, 0.16);
