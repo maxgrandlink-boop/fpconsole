@@ -1,8 +1,8 @@
 import { ApiError } from './error';
 import { delay } from './delay';
 import { assignProxyNow } from './proxy';
-import type { CountryName, RegionName } from './places';
-import { resolvePlace } from './places';
+import { resolveCountry, slotPrefix } from './places';
+import type { LineId } from './places';
 import { readSettings, type Settings } from './settings';
 import { clone, maskHost, nowIso, state } from './state';
 
@@ -61,8 +61,10 @@ export interface Persona {
   lang: string;
   fp: Fingerprint;
   proxy: PersonaProxy;
-  country: CountryName;
-  region: RegionName | null;
+  /** 国家 code，对应 Country.code。 */
+  country: string;
+  /** 州/省 code。没有州的国家为 null。 */
+  region: string | null;
   start_url: string | null;
   os_browser: string;
   status: EnvStatus;
@@ -88,11 +90,19 @@ export interface EnvStats {
   proxy_total: number;
 }
 
+export interface IpCheckInput {
+  enabled: boolean;
+  mode: 'strict' | 'loose';
+}
+
 export interface GeneratePersonaInput {
-  country: CountryName;
-  region: RegionName | null;
+  line: LineId;
+  country: string;
+  region: string | null;
   count: number;
   start_url?: string;
+  ipCheck: IpCheckInput;
+  ipipCheck: boolean;
 }
 
 export interface CreateEnvResult {
@@ -100,6 +110,7 @@ export interface CreateEnvResult {
   slot: string;
   status: EnvStatus;
   message?: string;
+  warning?: string;
 }
 
 export interface EnvStatusCounts {
@@ -293,7 +304,8 @@ function nextSlots(prefix: string, count: number): string[] {
 
 function personaFromSlot(
   slot: string,
-  place: ReturnType<typeof resolvePlace>,
+  countryCode: string,
+  regionCode: string | null,
   line: ReturnType<typeof assignProxyNow>,
   startUrl: string | null,
 ): Persona {
@@ -321,8 +333,8 @@ function personaFromSlot(
     pinned: false,
     starred: false,
     fp,
-    country: place.country,
-    region: place.region,
+    country: countryCode,
+    region: regionCode,
     start_url: startUrl,
     os_browser: `Win10 · ${major}`,
     status: 'closed',
@@ -348,17 +360,36 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Crea
   if (startUrl && !/^https?:\/\//.test(startUrl)) {
     throw new ApiError(400, '请输入以 http:// 或 https:// 开头的网址');
   }
-  const place = resolvePlace(input.country, input.region);
-  const slots = nextSlots(place.prefix, input.count);
-  const line = assignProxyNow(input.country, input.region);
-  const created = slots.map((slot) => personaFromSlot(slot, place, line, startUrl || null));
+  const { country, region } = resolveCountry(input.line, input.country, input.region);
+  const slots = nextSlots(slotPrefix(country, region), input.count);
+  const line = assignProxyNow(country, region);
+  const created = slots.map((slot) =>
+    personaFromSlot(slot, country.code, region?.code ?? null, line, startUrl || null),
+  );
   state.personas.push(...created);
 
   const results: CreateEnvResult[] = [];
   for (const persona of created) {
+    const check = mockQuality(input);
+    if (check.blocked) {
+      persona.status = 'error';
+      results.push({
+        id: persona.id,
+        slot: persona.slot,
+        status: 'error',
+        message: check.blocked,
+        ...(check.warning ? { warning: check.warning } : {}),
+      });
+      continue;
+    }
     try {
       await startByPersona(persona.id);
-      results.push({ id: persona.id, slot: persona.slot, status: 'running' });
+      results.push({
+        id: persona.id,
+        slot: persona.slot,
+        status: 'running',
+        ...(check.warning ? { warning: check.warning } : {}),
+      });
     } catch (error) {
       if (!(error instanceof ApiError && error.status === 409)) {
         persona.status = 'error';
@@ -368,10 +399,40 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Crea
         slot: persona.slot,
         status: persona.status,
         message: error instanceof Error ? error.message : String(error),
+        ...(check.warning ? { warning: check.warning } : {}),
       });
     }
   }
   return results;
+}
+
+// TODO: 严格/宽松的真实判定规则未定。这里只按固定概率做假检测。
+const CHECK_FAIL_RATE = 0.3;
+const CHECK_FAIL_REASONS = [
+  '机房/Hosting 出口，且非美国（新加坡）',
+  'AT&T Enterprises 商务线，非消费宽带',
+] as const;
+
+function mockFailReason(): string | null {
+  if (Math.random() >= CHECK_FAIL_RATE) return null;
+  return CHECK_FAIL_REASONS[Math.floor(Math.random() * CHECK_FAIL_REASONS.length)] ?? null;
+}
+
+function mockQuality(input: GeneratePersonaInput): { blocked?: string; warning?: string } {
+  let blocked: string | undefined;
+  let warning: string | undefined;
+  if (input.ipCheck.enabled) {
+    const reason = mockFailReason();
+    if (reason) {
+      if (input.ipCheck.mode === 'strict') blocked = reason;
+      else warning = reason;
+    }
+  }
+  if (input.ipipCheck) {
+    const reason = mockFailReason();
+    if (reason) warning = warning ? `${warning}；${reason}` : reason;
+  }
+  return { blocked, warning };
 }
 
 export async function retryStart(id: string): Promise<CreateEnvResult> {

@@ -1,8 +1,7 @@
 import type { PersonaProxy } from './env';
 import { ApiError } from './error';
 import { delay } from './delay';
-import type { CountryName, RegionName } from './places';
-import { resolvePlace } from './places';
+import type { Country, Region } from './places';
 import {
   clone,
   exampleUri,
@@ -58,24 +57,74 @@ export interface AssignedProxy {
   isp: string | null;
 }
 
-/** 按国家 + 州省分配一条线路。新加坡不使用州省。 */
-export async function assignProxy(
-  country: CountryName,
-  region: RegionName | null,
-): Promise<AssignedProxy> {
+interface KnownLine {
+  city?: string;
+  regionLabel: string;
+  ip: string | null;
+  asn: string | null;
+  isp: string | null;
+}
+
+/** 只收录旧 mock 里出现过的出口。新国家没有城市 token，也不编 IP。 */
+const KNOWN_LINES: Record<string, KnownLine> = {
+  'us:la': {
+    city: 'losangeles',
+    regionLabel: '美国-洛杉矶',
+    ip: '76.89.201.14',
+    asn: 'AS20115',
+    isp: 'Charter Communications',
+  },
+  'us:ny': {
+    city: 'newyork',
+    regionLabel: '美国-纽约',
+    ip: null,
+    asn: null,
+    isp: null,
+  },
+  'us:il': {
+    city: 'chicago',
+    regionLabel: '美国-芝加哥',
+    ip: null,
+    asn: null,
+    isp: null,
+  },
+  'us:tx': {
+    regionLabel: '美国-达拉斯',
+    ip: '12.119.84.203',
+    asn: 'AS7018',
+    isp: 'AT&T Enterprises',
+  },
+  sg: {
+    regionLabel: '新加坡',
+    ip: '128.199.85.7',
+    asn: 'AS16276',
+    isp: 'Datacamp Limited',
+  },
+};
+
+/** 按国家 + 州省分配一条线路。美国必须带 Region。 */
+export async function assignProxy(country: Country, region: Region | null): Promise<AssignedProxy> {
   await delay();
   return assignProxyNow(country, region);
 }
 
-export function assignProxyNow(country: CountryName, region: RegionName | null): AssignedProxy {
-  const place = resolvePlace(country, region);
+export function assignProxyNow(country: Country, region: Region | null): AssignedProxy {
+  if (country.regions && country.regions.length > 0) {
+    if (!region || !country.regions.some((item) => item.code === region.code)) {
+      throw new ApiError(400, '请选择州/省');
+    }
+  } else if (region) {
+    throw new ApiError(400, '该国家无州/省');
+  }
+  const key = region ? `${country.code}:${region.code}` : country.code;
+  const known = KNOWN_LINES[key];
   return {
-    uri: exampleUri(place.area, place.city ?? undefined),
+    uri: exampleUri(country.code, known?.city),
     type: '静态',
-    region: place.regionLabel,
-    ip: place.ip,
-    asn: place.asn,
-    isp: place.isp,
+    region: known?.regionLabel ?? country.name,
+    ip: known?.ip ?? null,
+    asn: known?.asn ?? null,
+    isp: known?.isp ?? null,
   };
 }
 

@@ -61,18 +61,28 @@ legacy/                   旧原型，只留作参考
 
 页面只从 `src/renderer/src/api` 取数据，不要 `fetch`。失败抛 `ApiError`，用 `error.status` 区分。
 
-创建环境不接收 slot，也不接收指纹：
+线路和国家从配置读，不要在页面里写死：
+
+```ts
+const lines = await getLines(); // asia 亚洲 / europe 欧洲 / america 美洲
+const countries = await getCountries('america'); // Country：code、name、可选 regions
+```
+
+创建环境不接收 slot，也不接收指纹。`country` 用 `Country.code`，美国的 `region` 用州 code（`la` / `ny` / `il` / `tx`），其他国家传 `null`。国家不属于该线路时返回 400。
 
 ```ts
 const results = await generatePersona({
-  country: '美国',
-  region: '加利福尼亚州',
+  line: 'america',
+  country: 'us',
+  region: 'la',
   count: 3,
   start_url: 'https://www.example.com',
+  ipCheck: { enabled: true, mode: 'strict' },
+  ipipCheck: false,
 });
 ```
 
-`count` 是 1 到 10 的整数。slot 按地区前缀自动续号（已有 `us-la-slot2` 时得到 `slot3` 起）。每个环境各自 `generateFingerprint()`。代理由 `assignProxy(country, region)` 按国家 + 州省分配。某一条启动失败时该环境留下，`status` 为 `error`，其余照常；用 `retryStart(id)` 再启动这一条。
+`count` 是 1 到 10 的整数。slot 按 `code` 续号（已有 `us-la-slot2` 时得到 `slot3` 起）。每个环境各自 `generateFingerprint()`。代理由 `assignProxy(country, region)` 分配，参数是 `Country` 和 `Region | null`。`ipCheck.enabled` 时对这条代理做假检测：`strict` 不合格则该条 `status` 为 `error` 并带 `message`，其余继续；`loose` 照常启动，不合格写在 `warning`。`ipipCheck` 不合格只写 `warning`。严格/宽松的真实规则还没定。某一条启动失败时该环境留下，用 `retryStart(id)` 再启动这一条。
 
 `window.fp`：`launchBrowser(slot)`、`stopBrowser(slot)`、`focusBrowser(slot)`、`getSettings()`、`saveSettings()`。已在运行时「打开」走 `focusBrowser`，它只返回假数据，不把窗口真的拉到前面。
 

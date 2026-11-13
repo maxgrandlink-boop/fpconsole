@@ -25,6 +25,7 @@ export type {
   EnvStatusCounts,
   Fingerprint,
   GeneratePersonaInput,
+  IpCheckInput,
   GeoSetting,
   Instance,
   ModeValue,
@@ -36,7 +37,8 @@ export type {
 } from './env';
 export { getNetworkStatus } from './network';
 export type { NetworkStatus } from './network';
-export type { CountryName, Place, RegionName } from './places';
+export { getCountries, getLines } from './places';
+export type { Country, Line, LineId, Region } from './places';
 export { assignProxy, checkProxy, exampleProxyUri, getProxyHistory, recheckProxy } from './proxy';
 export type { AssignedProxy, CheckProxyInput, ProxyCheckResult, ProxyHistoryItem } from './proxy';
 export { defaultSettings, getSettings, saveSettings } from './settings';
