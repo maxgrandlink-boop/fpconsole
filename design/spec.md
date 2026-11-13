@@ -489,14 +489,14 @@ assignProxy(country: string, region: string | null): {
 7. 指纹内部规则的具体随机范围。旧原型默认值只作种类参考，规则本身还没接。
 8. **IP 检测、IPIP 检测**怎样算通过。开关和严格/宽松的交互已经定了。
 
-## 12. Logo 候选
+## 12. 品牌候选
 
-产品名在内部改为 OK。下面三版只使用主色 `#2563EB`、白 `#FFFFFF`，并放在已有的深底 `#0F172A` 或浅底 `#F8FAFC` 上。源文件在 `design/logo/`，对比图是 `design/logo/logo-options.png`。28px 和 256px 各自按目标像素渲染。**待用户选定。**
+产品名在内部改为 OK。三套方案放在 `design/brand/`，logo 和主色是一套。现有 `design/tokens.css` 和 `design/naive-theme.ts` 先不动，选定后再替换。对比图是 `design/brand/brand-options.png`。**待用户选定。**
 
-| 版本 | 文件 | 做法 |
-| --- | --- | --- |
-| A | `ok-a.svg` | 圆角方块里的 OK 字标。蓝底白字，笔画用实心块，小尺寸仍能分开 O 和 K |
-| B | `ok-b.svg` | O 的圆环和 K 的竖笔、斜笔连成一个几何图形，没有外框 |
-| C | `ok-c.svg` | 浏览器窗口外框，O 是一圈指纹纹，旁边是 K |
+| 套 | 主色 | Logo | 理由 |
+| --- | --- | --- | --- |
+| A | `#2563EB` 蓝 | 圆角方块里的 OK 字标 | 就是现在这套蓝，运行绿和主色差得远 |
+| B | `#0E7490` 青 | O 环和 K 连成一个图形 | 主色偏青，运行中仍用绿，避免两个绿撞在一起 |
+| C | `#7C3AED` 紫 | 浏览器框里的指纹 O 和 K | 和蓝、青都分开，白字对比度够 |
 
-选定之前，侧栏仍用现在的 fp 字标，不把候选贴进界面。
+每套目录里有 `logo.svg`、`tokens.css`（只覆盖主色和状态色）、`main-dark.png`、`main-light.png`。色值和对比度写在 `design/brand/README.md`。选定之前，现有效果图仍用蓝色规范和 fp 字标。

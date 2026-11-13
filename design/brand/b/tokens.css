@@ -1,0 +1,29 @@
+/* Brand B — overrides design/tokens.css primary and status colors only. */
+:root {
+  --primary: #0E7490;
+  --primary-hover: #155E75;
+  --primary-pressed: #0C4A6E;
+  --primary-soft: #164E63;
+  --on-primary: #FFFFFF;
+  --focus: #67E8F9;
+  --success: #22C55E;
+  --success-text: #4ADE80;
+  --warning: #F5A524;
+  --warning-text: #F5A524;
+  --danger: #EF4444;
+  --danger-text: #F87171;
+}
+[data-theme="light"] {
+  --primary: #0E7490;
+  --primary-hover: #155E75;
+  --primary-pressed: #0C4A6E;
+  --primary-soft: #E0F2FE;
+  --on-primary: #FFFFFF;
+  --focus: #0E7490;
+  --success: #15803D;
+  --success-text: #15803D;
+  --warning: #B45309;
+  --warning-text: #B45309;
+  --danger: #DC2626;
+  --danger-text: #DC2626;
+}
