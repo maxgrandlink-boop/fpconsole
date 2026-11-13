@@ -27,13 +27,11 @@
         <div><h1>快速创建环境</h1><p>每个环境的指纹在创建时随机生成并锁定</p></div>
       </div>
       <div class="create-row">
+        <div class="field"><div class="lbl">线路</div>
+          <button class="select" type="button"><span class="val">美洲</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
         <div class="field"><div class="lbl">国家 / 地区</div>
-          <div class="combo"><button class="select" type="button"><span class="val"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true">
-<rect width="19" height="13" fill="#B22234"/>
-<rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/>
-<rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/>
-<rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/>
-</svg>美国</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+          <button class="select" type="button"><span class="val"><svg class="flag" viewBox="0 0 19 13" aria-hidden="true"><rect width="19" height="13" fill="#B22234"/><rect y="2" width="19" height="1" fill="#fff"/><rect y="4" width="19" height="1" fill="#fff"/><rect y="6" width="19" height="1" fill="#fff"/><rect y="8" width="19" height="1" fill="#fff"/><rect y="10" width="19" height="1" fill="#fff"/><rect width="8" height="7" fill="#3C3B6E"/></svg>美国</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         </div>
         <div class="field"><div class="lbl">州 / 省</div>
           <button class="select" type="button"><span class="val">加利福尼亚州</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
@@ -41,12 +39,25 @@
         <div class="field"><div class="lbl">多开数量</div>
           <button class="select" type="button"><span class="val">3</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         </div>
-        <div class="field"><label for="url">启动网址（可选）</label>
-          <input class="input" id="url" value="https://www.example.com">
+        <div class="field"><label for="url-error-network">启动网址（可选）</label>
+          <input class="input" id="url-error-network" value="https://www.example.com">
         </div>
         <div class="field"><div class="lbl" aria-hidden="true">&nbsp;</div><button class="btn btn-primary" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>创建并启动</button></div>
       </div>
-      
+      <div class="create-row2">
+        <div class="check-line">
+          <span class="lbl" id="ip-label-error-network">IP 检测</span>
+          <button class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="ip-label-error-network"><span class="knob"></span></button>
+          <div class="seg" role="radiogroup" aria-label="IP 检测严格程度">
+            <button class="on" type="button" disabled>严格</button>
+            <button type="button" disabled>宽松</button>
+          </div>
+        </div>
+        <div class="check-line">
+          <span class="lbl" id="ipip-label-error-network">IPIP 检测</span>
+          <button class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="ipip-label-error-network"><span class="knob"></span></button>
+        </div>
+      </div>
     </section><section class="card list" aria-label="环境列表">
       <div class="list-hd"><div class="tabs" role="tablist">
       <button class="tab on" type="button">全部 <span class="n">6</span></button>

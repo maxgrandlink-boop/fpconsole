@@ -10,7 +10,7 @@
 
 | 截图 | 内容 |
 | --- | --- |
-| `screenshots/main-1440.png` | 深色主界面。多开 3 个的结果里有一行异常，时间在名称下 |
+| `screenshots/main.png` | 深色主界面。创建卡片含线路、国家和两个检测开关 |
 | `screenshots/main-light.png` | 同一主界面的浅色皮肤 |
 | `screenshots/modal-view-1440.png` | 查看环境，指纹是只读摘要 |
 | `screenshots/loading-1440.png` | 「创建中…」和列表骨架 |

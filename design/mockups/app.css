@@ -84,8 +84,30 @@ svg.ico {
 }
 .linkish:hover { color: var(--focus); }
 .create-row {
-  display: grid; grid-template-columns: 200px 200px 112px minmax(180px, 1fr) auto;
+  display: grid;
+  grid-template-columns: 88px 124px 200px 112px minmax(160px, 1fr) auto;
   gap: var(--space-lg); align-items: end;
+}
+.create-row2 {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: var(--space-xl); margin-top: var(--space-lg);
+}
+.check-line { display: flex; align-items: center; gap: var(--space-md); }
+.check-line .lbl { margin: 0; }
+.switch {
+  width: 36px; height: 20px; padding: 0; position: relative;
+  border-radius: var(--radius-pill); border: 1px solid var(--border);
+  background: var(--bg-sunken);
+}
+.switch .knob {
+  position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--text-3);
+}
+.switch[aria-checked="true"] { background: var(--primary); border-color: var(--primary); }
+.switch[aria-checked="true"] .knob { left: 18px; background: var(--on-primary); }
+.seg button:disabled, .seg button.on:disabled {
+  color: var(--text-disabled); background: var(--surface-muted);
+  border-color: var(--border-subtle); cursor: not-allowed;
 }
 .field label, .lbl {
   display: flex; align-items: center; gap: var(--space-xs);
