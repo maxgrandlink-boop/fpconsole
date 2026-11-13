@@ -22,10 +22,10 @@
 
   /* ---------------- 路径设置（localStorage 持久化） ---------------- */
   const DEFAULT_SETTINGS = {
-    browser_exe: 'D:\\seccheck-console-kit-20261112\\browser\\chrome.exe',
-    kit_dir: 'D:\\seccheck-console-kit-20261112',
-    jump_tcp: '154.23.161.236:443',
-    jump_token: '666666',
+    browser_exe: 'D:\\fpconsole-kit\\browser\\chrome.exe',
+    kit_dir: 'D:\\fpconsole-kit',
+    jump_tcp: '10.0.0.1:443',
+    jump_token: 'demo-token',
     jump_attempts: '450',
     jump_wait_ms: '900000',
   };
@@ -49,8 +49,8 @@
     () => SESSION_CHARS[Math.floor(Math.random() * SESSION_CHARS.length)]).join('');
   const pickCity = () => CITIES[Math.floor(Math.random() * CITIES.length)];
   const smartproxyUri = (city) =>
-    `http://client-yuan05656006_area-us_city-${city}_life-120_session-${randSession()}`
-    + `:das56d5232f@proxy.smartproxycn.com:9000`;
+    `http://client-demo_area-us_city-${city}_life-120_session-${randSession()}`
+    + `:demo-pass@proxy.example.com:9000`;
 
   /* ---------------- 指纹配置默认值（面板 * 状态） ---------------- */
   const FP_STD = () => ({
@@ -77,7 +77,7 @@
         group: '默认分组', pinned: true, starred: true,
         lang: 'en-US', fp: FP_STD(),
         proxy: {
-          uri: 'http://client-yuan05656006_area-us_city-losangeles_life-120_session-0913fnru6pzb:das56d5232f@proxy.smartproxycn.com:9000',
+          uri: 'http://client-demo_area-us_city-losangeles_life-120_session-0913fnru6pzb:demo-pass@proxy.example.com:9000',
           ip: '71.219.34.18', type: '静态', region: '美国-洛杉矶',
           qualified: true, last_check: '2026-11-13T10:05:00',
         },
@@ -90,7 +90,7 @@
         lang: 'en-US',
         fp: (() => { const f = FP_STD(); f.screen = { mode: 'quick', value: '2560×1440' }; return f; })(),
         proxy: {
-          uri: 'http://client-yuan05656006_area-us_city-newyork_life-120_session-k7d2f8h4j9:das56d5232f@proxy.smartproxycn.com:9000',
+          uri: 'http://client-demo_area-us_city-newyork_life-120_session-k7d2f8h4j9:demo-pass@proxy.example.com:9000',
           ip: '98.42.67.11', type: '直连', region: '美国-纽约',
           qualified: false, last_check: '2026-11-13T09:30:00',
         },
@@ -101,9 +101,9 @@
     pidSeq: 12040,      // 假 pid 从 12040 起递增
     checkSeq: 0,        // proxy/check 轮换计数
     history: [
-      { proxy_uri: 'proxy.smartproxycn.com:9000', ip: '76.89.201.14', country: 'US', isp: 'Charter Communications', qualified: true, reason: '美国消费宽带（Charter 家宽段）', checked_at: '2026-11-13T10:05:00' },
-      { proxy_uri: 'proxy.smartproxycn.com:9000', ip: '128.199.85.7', country: 'SG', isp: 'Datacamp Limited', qualified: false, reason: '机房/Hosting 出口，且非美国（新加坡）', checked_at: '2026-11-13T09:52:00' },
-      { proxy_uri: 'proxy.smartproxycn.com:9000', ip: '12.119.84.203', country: 'US', isp: 'AT&T Enterprises', qualified: false, reason: 'AT&T Enterprises 商务线，非消费宽带', checked_at: '2026-11-13T09:30:00' },
+      { proxy_uri: 'proxy.example.com:9000', ip: '76.89.201.14', country: 'US', isp: 'Charter Communications', qualified: true, reason: '美国消费宽带（Charter 家宽段）', checked_at: '2026-11-13T10:05:00' },
+      { proxy_uri: 'proxy.example.com:9000', ip: '128.199.85.7', country: 'SG', isp: 'Datacamp Limited', qualified: false, reason: '机房/Hosting 出口，且非美国（新加坡）', checked_at: '2026-11-13T09:52:00' },
+      { proxy_uri: 'proxy.example.com:9000', ip: '12.119.84.203', country: 'US', isp: 'AT&T Enterprises', qualified: false, reason: 'AT&T Enterprises 商务线，非消费宽带', checked_at: '2026-11-13T09:30:00' },
     ],
   };
 
@@ -155,7 +155,7 @@
       '--ignore-gpu-blocklist',
       `--fp-canvas-replay-file="${st.kit_dir}\\table-emoji.json"`,
       `--proxy-server=${quoteIfSpaced(proxyUri)}`,
-      '--proxy-bypass-list=43.130.90.199',
+      '--proxy-bypass-list=10.0.0.2',
       `--fp-jump-tcp=${quoteIfSpaced(st.jump_tcp)}`,
       `--fp-jump-token=${quoteIfSpaced(st.jump_token)}`,
       '--fp-jump-decision=Real',

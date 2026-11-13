@@ -29,11 +29,11 @@
 ## 启动命令拼装（真实产品模板，客户端唯一权威逻辑 `MOCK.assembleCommand`）
 
 - 路径设置（⚙️，localStorage 键 `fpconsole-path-settings`）默认值：
-  - `browser_exe` = `D:\seccheck-console-kit-20261112\browser\chrome.exe`
-  - `kit_dir` = `D:\seccheck-console-kit-20261112`
-  - `jump_tcp` = `154.23.161.236:443`，`jump_token` = `666666`，`attempts` = `450`，`wait_ms` = `900000`
-- 拼装顺序：`"browser_exe" --fp-env=<slot> --fp-config="<kit_dir>\persona-<slot>.json" --user-data-dir="<kit_dir>\profile-<slot>" --no-first-run --no-default-browser-check --ignore-gpu-blocklist --fp-canvas-replay-file="<kit_dir>\table-emoji.json" --proxy-server=<proxy_uri> --proxy-bypass-list=43.130.90.199 --fp-jump-tcp=… --fp-jump-token=… --fp-jump-decision=Real --fp-jump-max-attempts=… --fp-jump-max-wait-ms=… --fp-jump-proxy=socks5://<同 proxy 的 user:pass@host:port> --flag-switches-begin --flag-switches-end --file-url-path-alias="/gen=<browser_exe 目录>\gen"`
-- 命令弹窗内 proxy_uri 可编辑（预填该行代理），🎲 填入 `http://client-yuan05656006_area-us_city-{losangeles|newyork|chicago}_life-120_session-{10位随机}:das56d5232f@proxy.smartproxycn.com:9000`，修改实时重拼命令。
+  - `browser_exe` = `D:\fpconsole-kit\browser\chrome.exe`
+  - `kit_dir` = `D:\fpconsole-kit`
+  - `jump_tcp` = `10.0.0.1:443`，`jump_token` = `demo-token`，`attempts` = `450`，`wait_ms` = `900000`
+- 拼装顺序：`"browser_exe" --fp-env=<slot> --fp-config="<kit_dir>\persona-<slot>.json" --user-data-dir="<kit_dir>\profile-<slot>" --no-first-run --no-default-browser-check --ignore-gpu-blocklist --fp-canvas-replay-file="<kit_dir>\table-emoji.json" --proxy-server=<proxy_uri> --proxy-bypass-list=10.0.0.2 --fp-jump-tcp=… --fp-jump-token=… --fp-jump-decision=Real --fp-jump-max-attempts=… --fp-jump-max-wait-ms=… --fp-jump-proxy=socks5://<同 proxy 的 user:pass@host:port> --flag-switches-begin --flag-switches-end --file-url-path-alias="/gen=<browser_exe 目录>\gen"`
+- 命令弹窗内 proxy_uri 可编辑（预填该行代理），🎲 填入 `http://client-demo_area-us_city-{losangeles|newyork|chicago}_life-120_session-{10位随机}:demo-pass@proxy.example.com:9000`，修改实时重拼命令。
 - 无 swiftshader 参数；无任何 `--remote-debugging-port`；值含空格一律加英文双引号。
 
 ## 联调注意（若未来接真后端）
