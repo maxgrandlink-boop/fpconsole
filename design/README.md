@@ -12,7 +12,6 @@
 | --- | --- |
 | `screenshots/main-1440.png` | 深色主界面。多开 3 个的结果里有一行异常，时间在名称下 |
 | `screenshots/main-light.png` | 同一主界面的浅色皮肤 |
-| `screenshots/more-settings-1440.png` | 「更多设置」只留代理线路 |
 | `screenshots/modal-view-1440.png` | 查看环境，指纹是只读摘要 |
 | `screenshots/loading-1440.png` | 「创建中…」和列表骨架 |
 | `screenshots/error-list-1440.png` | 列表加载失败 |
