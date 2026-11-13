@@ -298,8 +298,14 @@ onMounted(async () => {
             <input type="checkbox" :aria-label="`选择 ${persona.slot}`" />
             <PandaMark :size="28" />
             <div class="name">
-              <strong>{{ persona.slot }}</strong>
-              <span>
+              <strong :title="persona.slot">{{ persona.slot }}</strong>
+              <span
+                :title="
+                  persona.status === 'ip_fail'
+                    ? `${fmtTime(persona.created_at)} IP 不通`
+                    : fmtTime(persona.created_at)
+                "
+              >
                 {{ fmtTime(persona.created_at) }}
                 <template v-if="persona.status === 'ip_fail'">
                   <i class="fail-dot" /><em>IP 不通</em>
@@ -470,7 +476,7 @@ select {
 .head,
 .env-row {
   display: grid;
-  grid-template-columns: minmax(340px, 1.7fr) minmax(120px, 0.8fr) minmax(220px, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr) minmax(0, 1.15fr);
   align-items: center;
 }
 .head {
@@ -497,7 +503,11 @@ select {
 }
 .title-col {
   justify-content: flex-start;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+}
+.title-col > input,
+.title-col > svg {
+  flex-shrink: 0;
 }
 .env-row {
   min-height: 72px;
@@ -511,12 +521,15 @@ select {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  flex: 0 0 auto;
+  flex: 1;
 }
 .name strong {
   font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .name span,
 .host,
@@ -533,6 +546,12 @@ select {
   border-radius: 50%;
   background: var(--danger);
   display: inline-block;
+}
+.name span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .name em {
   color: var(--danger-text);
