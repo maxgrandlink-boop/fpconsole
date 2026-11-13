@@ -129,7 +129,14 @@ export const state: {
         region: '美国-洛杉矶',
         qualified: true,
         last_check: '2026-11-13T10:05:00',
+        asn: 'AS20115',
+        isp: 'Charter Communications',
       },
+      country: '美国',
+      region: '加利福尼亚州',
+      start_url: null,
+      os_browser: 'Win10 · 155',
+      status: 'closed',
     },
     {
       id: 'p-2',
@@ -155,7 +162,14 @@ export const state: {
         region: '美国-纽约',
         qualified: false,
         last_check: '2026-11-13T09:30:00',
+        asn: null,
+        isp: null,
       },
+      country: '美国',
+      region: '纽约州',
+      start_url: null,
+      os_browser: 'Win10 · 153',
+      status: 'closed',
     },
   ],
   instances: [],
@@ -218,8 +232,14 @@ function randSession(): string {
 }
 
 export function smartproxyUri(city: City): string {
+  return exampleUri('us', city);
+}
+
+/** 有城市 token 时带 `_city-`。得克萨斯、新加坡没有城市 token，只带 area。 */
+export function exampleUri(area: 'us' | 'sg', city?: string): string {
+  const cityPart = city ? `_city-${city}` : '';
   return (
-    `http://client-demo_area-us_city-${city}_life-120_session-${randSession()}` +
+    `http://client-demo_area-${area}${cityPart}_life-120_session-${randSession()}` +
     ':demo-pass@proxy.example.com:9000'
   );
 }

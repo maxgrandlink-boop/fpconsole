@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { LaunchBrowserResult, StopBrowserResult } from '../preload/fp';
+import type { FocusBrowserResult, LaunchBrowserResult, StopBrowserResult } from '../preload/fp';
 import type { Settings } from '../renderer/src/api/settings';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -28,6 +28,9 @@ function registerIpc(): void {
   ipcMain.handle('fp:stop-browser', (_event, slot: string): StopBrowserResult => {
     return { slot, stopped: 1 };
   });
+  ipcMain.handle('fp:focus-browser', (_event, slot: string): FocusBrowserResult => {
+    return { slot, focused: true };
+  });
   ipcMain.handle('fp:get-settings', (): Settings => ({ ...settings }));
   ipcMain.handle('fp:save-settings', (_event, next: Settings): Settings => {
     settings = { ...next };
@@ -37,8 +40,9 @@ function registerIpc(): void {
 
 function createWindow(): void {
   const win = new BrowserWindow({
-    width: 1280,
-    height: 840,
+    width: 1440,
+    height: 900,
+    backgroundColor: '#0F172A',
     minWidth: 1024,
     minHeight: 700,
     autoHideMenuBar: true,

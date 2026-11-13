@@ -9,6 +9,9 @@ const fp: FpApi = {
   stopBrowser(slot) {
     return ipcRenderer.invoke('fp:stop-browser', slot);
   },
+  focusBrowser(slot) {
+    return ipcRenderer.invoke('fp:focus-browser', slot);
+  },
   getSettings() {
     return ipcRenderer.invoke('fp:get-settings');
   },

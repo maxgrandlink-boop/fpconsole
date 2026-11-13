@@ -6,10 +6,12 @@ export {
   deletePersona,
   generateFingerprint,
   generatePersona,
+  getEnvStatusCounts,
   getInstances,
   getPersonaConfig,
   getPersonas,
   getStats,
+  retryStart,
   startByPersona,
   stopByPersona,
   toggleStar,
@@ -17,7 +19,10 @@ export {
 export type {
   AssembleVars,
   BulkStartResult,
+  CreateEnvResult,
   EnvStats,
+  EnvStatus,
+  EnvStatusCounts,
   Fingerprint,
   GeneratePersonaInput,
   GeoSetting,
@@ -29,7 +34,10 @@ export type {
   PersonaProxy,
   StopResult,
 } from './env';
-export { checkProxy, exampleProxyUri, getProxyHistory, recheckProxy } from './proxy';
-export type { CheckProxyInput, ProxyCheckResult, ProxyHistoryItem } from './proxy';
+export { getNetworkStatus } from './network';
+export type { NetworkStatus } from './network';
+export type { CountryName, Place, RegionName } from './places';
+export { assignProxy, checkProxy, exampleProxyUri, getProxyHistory, recheckProxy } from './proxy';
+export type { AssignedProxy, CheckProxyInput, ProxyCheckResult, ProxyHistoryItem } from './proxy';
 export { defaultSettings, getSettings, saveSettings } from './settings';
 export type { Settings } from './settings';

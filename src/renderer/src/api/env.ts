@@ -1,7 +1,10 @@
 import { ApiError } from './error';
 import { delay } from './delay';
+import { assignProxyNow } from './proxy';
+import type { CountryName, RegionName } from './places';
+import { resolvePlace } from './places';
 import { readSettings, type Settings } from './settings';
-import { cityRegion, clone, maskHost, nowIso, pickCity, smartproxyUri, state } from './state';
+import { clone, maskHost, nowIso, state } from './state';
 
 export interface ModeValue {
   mode: string;
@@ -34,7 +37,12 @@ export interface PersonaProxy {
   region: string;
   qualified: boolean | null;
   last_check: string | null;
+  asn: string | null;
+  isp: string | null;
 }
+
+/** 列表状态。异常不进运行中/已关闭/已过期计数，但仍算在全部里。 */
+export type EnvStatus = 'running' | 'closed' | 'expired' | 'starting' | 'error';
 
 export interface Persona {
   id: string;
@@ -53,6 +61,11 @@ export interface Persona {
   lang: string;
   fp: Fingerprint;
   proxy: PersonaProxy;
+  country: CountryName;
+  region: RegionName | null;
+  start_url: string | null;
+  os_browser: string;
+  status: EnvStatus;
 }
 
 export interface Instance {
@@ -76,7 +89,24 @@ export interface EnvStats {
 }
 
 export interface GeneratePersonaInput {
+  country: CountryName;
+  region: RegionName | null;
+  count: number;
+  start_url?: string;
+}
+
+export interface CreateEnvResult {
+  id: string;
   slot: string;
+  status: EnvStatus;
+  message?: string;
+}
+
+export interface EnvStatusCounts {
+  all: number;
+  running: number;
+  closed: number;
+  expired: number;
 }
 
 export interface AssembleVars {
@@ -246,25 +276,38 @@ export async function getInstances(): Promise<Instance[]> {
   return clone(state.instances);
 }
 
-export async function generatePersona(input: GeneratePersonaInput): Promise<Persona> {
-  await delay();
-  const name = String(input.slot || '').trim();
-  if (!name) throw new ApiError(400, 'slot 不能为空');
-  if (state.personas.some((persona) => persona.slot.toLowerCase() === name.toLowerCase())) {
-    throw new ApiError(409, 'slot 已存在');
+function nextSlots(prefix: string, count: number): string[] {
+  const pattern = new RegExp(`^${prefix}(\\d+)$`, 'i');
+  let max = 0;
+  for (const persona of state.personas) {
+    const matched = persona.slot.match(pattern);
+    if (matched?.[1]) max = Math.max(max, Number(matched[1]));
   }
+  const slots = Array.from({ length: count }, (_, index) => `${prefix}${max + index + 1}`);
+  const taken = slots.some((slot) =>
+    state.personas.some((persona) => persona.slot.toLowerCase() === slot.toLowerCase()),
+  );
+  if (taken) throw new ApiError(409, '该 slot 已存在，请换一个名字');
+  return slots;
+}
+
+function personaFromSlot(
+  slot: string,
+  place: ReturnType<typeof resolvePlace>,
+  line: ReturnType<typeof assignProxyNow>,
+  startUrl: string | null,
+): Persona {
   const fp = generateFingerprint();
   const tz = fp.tz.mode === 'custom' ? fp.tz.value || 'America/Los_Angeles' : 'America/Los_Angeles';
   const lang = fp.lang.mode === 'custom' ? fp.lang.value || 'en-US' : 'en-US';
   const screen = fp.screen.value || '1920×1080';
   const major = 150 + Math.floor(Math.random() * 7);
   const seq = state.personas.reduce((max, persona) => Math.max(max, persona.seq || 0), 0) + 1;
-  const city = pickCity();
-  const persona: Persona = {
-    id: 'p-' + Date.now().toString(36),
+  return {
+    id: 'p-' + Date.now().toString(36) + seq.toString(36),
     seq,
-    slot: name,
-    name,
+    slot,
+    name: slot,
     tz,
     lang,
     ua_short:
@@ -278,17 +321,85 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Pers
     pinned: false,
     starred: false,
     fp,
+    country: place.country,
+    region: place.region,
+    start_url: startUrl,
+    os_browser: `Win10 · ${major}`,
+    status: 'closed',
     proxy: {
-      uri: smartproxyUri(city),
-      ip: null,
-      type: '静态',
-      region: cityRegion(city),
+      uri: line.uri,
+      ip: line.ip,
+      type: line.type,
+      region: line.region,
       qualified: null,
       last_check: null,
+      asn: line.asn,
+      isp: line.isp,
     },
   };
-  state.personas.push(persona);
-  return clone(persona);
+}
+
+export async function generatePersona(input: GeneratePersonaInput): Promise<CreateEnvResult[]> {
+  await delay();
+  if (!Number.isInteger(input.count) || input.count < 1 || input.count > 10) {
+    throw new ApiError(400, '多开数量须为 1 到 10 的整数');
+  }
+  const startUrl = (input.start_url ?? '').trim();
+  if (startUrl && !/^https?:\/\//.test(startUrl)) {
+    throw new ApiError(400, '请输入以 http:// 或 https:// 开头的网址');
+  }
+  const place = resolvePlace(input.country, input.region);
+  const slots = nextSlots(place.prefix, input.count);
+  const line = assignProxyNow(input.country, input.region);
+  const created = slots.map((slot) => personaFromSlot(slot, place, line, startUrl || null));
+  state.personas.push(...created);
+
+  const results: CreateEnvResult[] = [];
+  for (const persona of created) {
+    try {
+      await startByPersona(persona.id);
+      results.push({ id: persona.id, slot: persona.slot, status: 'running' });
+    } catch (error) {
+      if (!(error instanceof ApiError && error.status === 409)) {
+        persona.status = 'error';
+      }
+      results.push({
+        id: persona.id,
+        slot: persona.slot,
+        status: persona.status,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return results;
+}
+
+export async function retryStart(id: string): Promise<CreateEnvResult> {
+  const persona = findPersona(id);
+  if (!persona) throw new ApiError(404, '环境不存在');
+  try {
+    await startByPersona(persona.id);
+    return { id: persona.id, slot: persona.slot, status: 'running' };
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 409)) throw error;
+    persona.status = 'error';
+    return {
+      id: persona.id,
+      slot: persona.slot,
+      status: 'error',
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function getEnvStatusCounts(): Promise<EnvStatusCounts> {
+  await delay();
+  return {
+    all: state.personas.length,
+    running: state.personas.filter((persona) => persona.status === 'running').length,
+    closed: state.personas.filter((persona) => persona.status === 'closed').length,
+    expired: state.personas.filter((persona) => persona.status === 'expired').length,
+  };
 }
 
 export async function deletePersona(id: string): Promise<null> {
@@ -333,10 +444,11 @@ export async function getPersonaConfig(id: string): Promise<PersonaConfigFile> {
 }
 
 export async function startByPersona(personaId: string): Promise<Instance> {
-  await delay();
   const persona = findPersona(personaId);
   if (!persona) throw new ApiError(404, '环境不存在');
   if (runningInstancesOf(persona.id).length) throw new ApiError(409, '该环境已在运行');
+  persona.status = 'starting';
+  await delay();
   const command = assembleCommand(persona, { proxy_uri: persona.proxy.uri });
   const instance: Instance = {
     id: 'i-' + Date.now().toString(36),
@@ -352,6 +464,7 @@ export async function startByPersona(personaId: string): Promise<Instance> {
   state.instances.unshift(instance);
   state.launchesTotal += 1;
   persona.used_count += 1;
+  persona.status = 'running';
   return clone(instance);
 }
 
@@ -365,6 +478,7 @@ export async function stopByPersona(personaId: string): Promise<StopResult> {
     instance.stopped_at = nowIso();
     stopped += 1;
   }
+  if (stopped > 0 && persona.status !== 'expired') persona.status = 'closed';
   return { stopped };
 }
 

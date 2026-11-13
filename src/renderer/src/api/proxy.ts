@@ -1,8 +1,11 @@
 import type { PersonaProxy } from './env';
 import { ApiError } from './error';
 import { delay } from './delay';
+import type { CountryName, RegionName } from './places';
+import { resolvePlace } from './places';
 import {
   clone,
+  exampleUri,
   maskHost,
   nextCheckResult,
   nowIso,
@@ -44,6 +47,36 @@ export interface CheckProxyInput {
 
 export function exampleProxyUri(): string {
   return smartproxyUri(pickCity());
+}
+
+export interface AssignedProxy {
+  uri: string;
+  type: '静态';
+  region: string;
+  ip: string | null;
+  asn: string | null;
+  isp: string | null;
+}
+
+/** 按国家 + 州省分配一条线路。新加坡不使用州省。 */
+export async function assignProxy(
+  country: CountryName,
+  region: RegionName | null,
+): Promise<AssignedProxy> {
+  await delay();
+  return assignProxyNow(country, region);
+}
+
+export function assignProxyNow(country: CountryName, region: RegionName | null): AssignedProxy {
+  const place = resolvePlace(country, region);
+  return {
+    uri: exampleUri(place.area, place.city ?? undefined),
+    type: '静态',
+    region: place.regionLabel,
+    ip: place.ip,
+    asn: place.asn,
+    isp: place.isp,
+  };
 }
 
 export async function checkProxy(input: CheckProxyInput): Promise<ProxyCheckResult> {

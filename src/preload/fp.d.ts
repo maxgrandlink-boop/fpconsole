@@ -11,9 +11,15 @@ export interface StopBrowserResult {
   stopped: number;
 }
 
+export interface FocusBrowserResult {
+  slot: string;
+  focused: true;
+}
+
 export interface FpApi {
   launchBrowser(slot: string): Promise<LaunchBrowserResult>;
   stopBrowser(slot: string): Promise<StopBrowserResult>;
+  focusBrowser(slot: string): Promise<FocusBrowserResult>;
   getSettings(): Promise<Settings>;
   saveSettings(settings: Settings): Promise<Settings>;
 }

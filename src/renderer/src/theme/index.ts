@@ -1,10 +1,15 @@
-import { darkTheme, type GlobalThemeOverrides } from 'naive-ui';
+import { darkTheme, type GlobalTheme, type GlobalThemeOverrides } from 'naive-ui';
+import { themeOverridesDark, themeOverridesLight } from './naive-theme';
 
-/** Naive 默认深色。布局和页面不要另写颜色。 */
-export const theme = darkTheme;
+export type ThemeMode = 'dark' | 'light';
 
-/**
- * 换主题只改这个对象。
- * 当前为空，走 Naive 默认深色 token。
- */
-export const themeOverrides: GlobalThemeOverrides = {};
+export { themeOverridesDark, themeOverridesLight };
+
+/** 深色配合 Naive darkTheme。浅色不套 darkTheme，只覆盖 themeOverridesLight。 */
+export function naiveThemeFor(mode: ThemeMode): GlobalTheme | null {
+  return mode === 'dark' ? darkTheme : null;
+}
+
+export function themeOverridesFor(mode: ThemeMode): GlobalThemeOverrides {
+  return mode === 'dark' ? themeOverridesDark : themeOverridesLight;
+}
