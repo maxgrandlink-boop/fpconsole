@@ -418,7 +418,9 @@ select {
 }
 .row input,
 .row select {
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   min-width: 0;
 }
 input[type='checkbox'] {
