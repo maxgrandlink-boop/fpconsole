@@ -1,4 +1,9 @@
 node_modules/
+out/
+dist/
 portable/
 *.zip
 *.log
+.eslintcache
+*.local
+.DS_Store

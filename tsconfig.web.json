@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "noUnusedLocals": true,
+    "useDefineForClassFields": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force"
+  },
+  "include": ["src/renderer/src/**/*.ts", "src/renderer/src/**/*.vue", "src/preload/fp.d.ts"]
+}

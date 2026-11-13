@@ -652,37 +652,33 @@
           <div><span>时区</span><b>${esc(r.timezone || '–')}</b></div>
           <div><span>连通延迟</span><b>${r.latency_ms != null ? esc(r.latency_ms) + ' ms' : '–'}</b></div>
         </div>
-        <div class="pr-reason">${esc(r.reason || (r.direct ? 'ipinfo.io/json 实测返回（浏览器直连，未经代理）' : '符合美国消费宽带特征'))}</div>
+        <div class="pr-reason">${esc(r.reason || (r.direct ? '本地样例，未发起网络请求' : '符合美国消费宽带特征'))}</div>
       </div>`;
   }
 
-  /* ipinfo.io/json 直连实测：真实请求、真实延迟（不经代理） */
+  /* 直连检测：只展示内置样例，不发起任何网络请求 */
   async function checkDirect() {
     const btn = $('#px-direct-btn');
     btn.disabled = true; btn.textContent = '检测中…';
-    const stopAnim = showChecking('正在请求 ipinfo.io/json（直连实测）', [
-      '① 发起 HTTPS 请求 ipinfo.io/json',
-      '② 等待响应报文',
-      '③ 解析 IP / org / ASN / 地理位置',
-      '④ 计算往返延迟',
+    const stopAnim = showChecking('直连检测（本地样例，无网络请求）', [
+      '① 读取内置样例',
+      '② 不访问外部网络',
+      '③ 填入样例 IP / org / 地理位置',
     ]);
-    const t0 = performance.now();
     try {
-      const res = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(12000) });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const j = await res.json();
-      const latency = Math.round(performance.now() - t0);
+      await new Promise((r) => setTimeout(r, 300));
       $('#px-result').innerHTML = proxyResultCard({
-        direct: true, latency_ms: latency,
-        ip: j.ip, hostname: j.hostname, city: j.city, region: j.region,
-        country: j.country, org: j.org, timezone: j.timezone,
+        direct: true, latency_ms: null,
+        ip: '203.0.113.10', hostname: 'example.local', city: 'Los Angeles', region: 'California',
+        country: 'US', org: 'Example Org', timezone: 'America/Los_Angeles',
+        reason: '本地样例，未发起网络请求',
       });
     } catch (err) {
-      $('#px-result').innerHTML = emptyBox('ipinfo.io 请求失败：' + err.message + '（检查本机网络/代理连通性）');
-      toast('ipinfo.io 请求失败：' + err.message);
+      $('#px-result').innerHTML = emptyBox('直连样例展示失败：' + err.message);
+      toast('直连样例展示失败：' + err.message);
     } finally {
       stopAnim();
-      btn.disabled = false; btn.textContent = '🌐 ipinfo 直连检测';
+      btn.disabled = false; btn.textContent = '🌐 直连检测（本地样例）';
     }
   }
 
@@ -693,8 +689,8 @@
     const btn = $('#px-btn');
     btn.disabled = true; btn.textContent = '验证中…';
     const stopAnim = showChecking('正在检测代理出口质量', [
-      '① 建立代理隧道连接',
-      '② 请求 ipinfo.io/json',
+      '① 读取内置轮换结果',
+      '② 不访问外部网络',
       '③ 解析 org / ASN / 地理位置',
       '④ 匹配合格规则（美国消费宽带）',
     ]);

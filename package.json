@@ -1,13 +1,35 @@
 {
   "name": "fpconsole",
-  "productName": "fpconsole 浏览器实例管理台",
   "version": "0.1.0",
-  "description": "Browser instance management console - Electron desktop prototype",
-  "main": "main.js",
+  "private": true,
+  "description": "Browser instance management console",
+  "type": "module",
+  "main": "./out/main/index.js",
   "scripts": {
-    "start": "electron ."
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && vue-tsc --noEmit -p tsconfig.web.json",
+    "lint": "eslint . && prettier --check ."
+  },
+  "dependencies": {
+    "naive-ui": "^2.45.3",
+    "pinia": "^4.1.0",
+    "vue": "^3.5.45",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "electron": "^38.8.6"
+    "@types/node": "^22.19.1",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "electron": "^38.8.6",
+    "electron-vite": "^6.0.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-vue": "^10.12.1",
+    "prettier": "^3.10.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.8",
+    "vue-tsc": "^3.3.14"
   }
 }
