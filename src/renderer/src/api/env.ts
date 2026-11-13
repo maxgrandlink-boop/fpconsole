@@ -1,16 +1,7 @@
 import { ApiError } from './error';
 import { delay } from './delay';
 import { readSettings, type Settings } from './settings';
-import {
-  cityRegion,
-  clone,
-  fpStd,
-  maskHost,
-  nowIso,
-  pickCity,
-  smartproxyUri,
-  state,
-} from './state';
+import { cityRegion, clone, maskHost, nowIso, pickCity, smartproxyUri, state } from './state';
 
 export interface ModeValue {
   mode: string;
@@ -86,7 +77,6 @@ export interface EnvStats {
 
 export interface GeneratePersonaInput {
   slot: string;
-  fp?: Partial<Fingerprint>;
 }
 
 export interface AssembleVars {
@@ -146,6 +136,60 @@ function exeDir(path: string): string {
   const text = String(path || '');
   const index = text.lastIndexOf('\\');
   return index > 0 ? text.slice(0, index) : text;
+}
+
+const LANG_MODES = ['auto', 'custom'] as const;
+const TZ_MODES = ['auto', 'custom'] as const;
+const TZ_VALUES = [
+  'America/Los_Angeles',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Phoenix',
+] as const;
+const GEO_MODES = ['ask', 'allow', 'block'] as const;
+const GEO_SUBS = ['ip', 'custom'] as const;
+const SCREEN_MODES = ['random', 'quick', 'custom'] as const;
+const SCREEN_QUICK = ['1920×1080', '2560×1440', '1680×1050', '1366×768', '3840×2160'] as const;
+const SCREEN_RANDOM = ['1366×768', '1440×900', '1536×864', '1600×900', '1920×1080'] as const;
+const FONTS = ['default', 'custom'] as const;
+const CLIENT_RECTS = ['on', 'off'] as const;
+const WEBRTC = ['replace', 'real', 'disable'] as const;
+const NOISE_OR_REAL = ['noise', 'real'] as const;
+const WEBGL_INFO = ['custom', 'real'] as const;
+const WEBGL_VENDORS = ['intel', 'amd', 'apple', 'mozilla'] as const;
+
+function pick<T>(items: readonly T[]): T {
+  const item = items[Math.floor(Math.random() * items.length)];
+  if (item === undefined) throw new Error('empty pick');
+  return item;
+}
+
+/** 指纹由内部规则生成，调用方不能指定。将来接真实规则时只替换这个函数。 */
+export function generateFingerprint(): Fingerprint {
+  const langMode = pick(LANG_MODES);
+  const tzMode = pick(TZ_MODES);
+  const geoMode = pick(GEO_MODES);
+  const screenMode = pick(SCREEN_MODES);
+  return {
+    lang: { mode: langMode, value: 'en-US' },
+    tz: {
+      mode: tzMode,
+      value: tzMode === 'custom' ? pick(TZ_VALUES) : 'America/Los_Angeles',
+    },
+    geo: { mode: geoMode, sub: geoMode === 'allow' ? pick(GEO_SUBS) : 'ip' },
+    screen: {
+      mode: screenMode,
+      value: screenMode === 'random' ? pick(SCREEN_RANDOM) : pick(SCREEN_QUICK),
+    },
+    fonts: pick(FONTS),
+    clientrects: pick(CLIENT_RECTS),
+    webrtc: pick(WEBRTC),
+    canvas: pick(NOISE_OR_REAL),
+    webgl: pick(NOISE_OR_REAL),
+    webglinfo: pick(WEBGL_INFO),
+    webglvendor: pick(WEBGL_VENDORS),
+  };
 }
 
 /** 只拼命令字符串，不启动进程。 */
@@ -209,17 +253,10 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Pers
   if (state.personas.some((persona) => persona.slot.toLowerCase() === name.toLowerCase())) {
     throw new ApiError(409, 'slot 已存在');
   }
-  const base = fpStd();
-  const merged: Fingerprint =
-    input.fp && typeof input.fp === 'object' ? { ...base, ...input.fp } : base;
-  const tz =
-    merged.tz.mode === 'custom' ? merged.tz.value || 'America/Los_Angeles' : 'America/Los_Angeles';
-  const lang = merged.lang.mode === 'custom' ? merged.lang.value || 'en-US' : 'en-US';
-  const screens = ['1366×768', '1440×900', '1536×864', '1600×900', '1920×1080'];
-  const screen =
-    merged.screen.mode === 'random'
-      ? screens[Math.floor(Math.random() * screens.length)] || '1920×1080'
-      : merged.screen.value || '1920×1080';
+  const fp = generateFingerprint();
+  const tz = fp.tz.mode === 'custom' ? fp.tz.value || 'America/Los_Angeles' : 'America/Los_Angeles';
+  const lang = fp.lang.mode === 'custom' ? fp.lang.value || 'en-US' : 'en-US';
+  const screen = fp.screen.value || '1920×1080';
   const major = 150 + Math.floor(Math.random() * 7);
   const seq = state.personas.reduce((max, persona) => Math.max(max, persona.seq || 0), 0) + 1;
   const city = pickCity();
@@ -240,7 +277,7 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<Pers
     group: '默认分组',
     pinned: false,
     starred: false,
-    fp: merged,
+    fp,
     proxy: {
       uri: smartproxyUri(city),
       ip: null,

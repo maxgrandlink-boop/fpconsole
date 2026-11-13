@@ -4,6 +4,7 @@ export {
   bulkStart,
   bulkStop,
   deletePersona,
+  generateFingerprint,
   generatePersona,
   getInstances,
   getPersonaConfig,

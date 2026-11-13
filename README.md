@@ -57,7 +57,7 @@ import { getPersonas } from '../api';
 const personas = await getPersonas();
 ```
 
-不要在页面里 `fetch`，也不要自己造一套字段。类型都在 `api/env.ts`、`api/proxy.ts`、`api/settings.ts`。失败时抛 `ApiError`，用 `error.status` 区分（空 slot 是 400，重复 slot 或已在运行是 409，找不到是 404）。
+不要在页面里 `fetch`，也不要自己造一套字段。类型都在 `api/env.ts`、`api/proxy.ts`、`api/settings.ts`。失败时抛 `ApiError`，用 `error.status` 区分（空 slot 是 400，重复 slot 或已在运行是 409，找不到是 404）。创建环境不接收指纹：`generatePersona({ slot })` 内部调用 `generateFingerprint()`，按旧原型里出现过的取值随机生成，以后接内部规则只替换这一个函数。
 
 `window.fp` 是主进程能力：`launchBrowser(slot)`、`stopBrowser(slot)`、`getSettings()`、`saveSettings()`。类型在 `src/preload/fp.d.ts`。这四个方法现在也只返回内存假数据，不会启动浏览器。页面上的业务数据走 api，不要绕过 api 直接读主进程。
 
