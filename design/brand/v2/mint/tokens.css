@@ -1,0 +1,45 @@
+/* 海盐薄荷 — overrides design/tokens.css. Do not copy into design/tokens.css until this set is chosen. */
+:root {
+  --primary: #06D6A0;
+  --primary-hover: #1ad9a8;
+  --primary-pressed: #05bc8d;
+  --primary-soft: #17474B;
+  --on-primary: #042F2E;
+  --focus: #BDE0FE;
+  --mark-gradient: linear-gradient(105deg, #06D6A0 0%, #4CC9F0 52%, #BDE0FE 100%);
+  --btn-gradient: linear-gradient(105deg, #06D6A0 0%, #4CC9F0 100%);
+  --btn-gradient-hover: linear-gradient(105deg, #1ad9a8 0%, #5acdf1 100%);
+  --btn-gradient-pressed: linear-gradient(105deg, #05bc8d 0%, #43b1d3 100%);
+  --primary-glow: rgba(6, 214, 160, 0.30);
+  --success: #A5B4FC;
+  --success-text: #A5B4FC;
+  --success-soft: rgba(165, 180, 252, 0.16);
+  --warning: #F5A524;
+  --warning-text: #F5A524;
+  --warning-soft: rgba(245, 165, 36, 0.16);
+  --danger: #F87171;
+  --danger-text: #F87171;
+  --danger-soft: rgba(248, 113, 113, 0.16);
+}
+[data-theme="light"] {
+  --primary: #06D6A0;
+  --primary-hover: #1ad9a8;
+  --primary-pressed: #05bc8d;
+  --primary-soft: #D7F8F0;
+  --on-primary: #042F2E;
+  --focus: #115E59;
+  --mark-gradient: linear-gradient(105deg, #06D6A0 0%, #4CC9F0 52%, #BDE0FE 100%);
+  --btn-gradient: linear-gradient(105deg, #06D6A0 0%, #4CC9F0 100%);
+  --btn-gradient-hover: linear-gradient(105deg, #1ad9a8 0%, #5acdf1 100%);
+  --btn-gradient-pressed: linear-gradient(105deg, #05bc8d 0%, #43b1d3 100%);
+  --primary-glow: rgba(6, 214, 160, 0.30);
+  --success: #4338CA;
+  --success-text: #4338CA;
+  --success-soft: rgba(67, 56, 202, 0.1);
+  --warning: #B45309;
+  --warning-text: #B45309;
+  --warning-soft: rgba(180, 83, 9, 0.12);
+  --danger: #DC2626;
+  --danger-text: #DC2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+}

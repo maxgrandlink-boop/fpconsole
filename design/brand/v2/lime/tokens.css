@@ -1,0 +1,45 @@
+/* 青柠气泡 — overrides design/tokens.css. Do not copy into design/tokens.css until this set is chosen. */
+:root {
+  --primary: #AACC00;
+  --primary-hover: #b1d014;
+  --primary-pressed: #96b400;
+  --primary-soft: #35412C;
+  --on-primary: #14210A;
+  --focus: #E4F7A8;
+  --mark-gradient: linear-gradient(105deg, #AACC00 0%, #80ED99 52%, #57CC99 100%);
+  --btn-gradient: linear-gradient(105deg, #AACC00 0%, #80ED99 52%, #57CC99 100%);
+  --btn-gradient-hover: linear-gradient(105deg, #b1d014 0%, #8aeea1 52%, #64d0a1 100%);
+  --btn-gradient-pressed: linear-gradient(105deg, #96b400 0%, #71d187 52%, #4db487 100%);
+  --primary-glow: rgba(170, 204, 0, 0.28);
+  --success: #60A5FA;
+  --success-text: #60A5FA;
+  --success-soft: rgba(96, 165, 250, 0.16);
+  --warning: #EA580C;
+  --warning-text: #EA580C;
+  --warning-soft: rgba(234, 88, 12, 0.16);
+  --danger: #F87171;
+  --danger-text: #F87171;
+  --danger-soft: rgba(248, 113, 113, 0.16);
+}
+[data-theme="light"] {
+  --primary: #AACC00;
+  --primary-hover: #b1d014;
+  --primary-pressed: #96b400;
+  --primary-soft: #F0F6D1;
+  --on-primary: #14210A;
+  --focus: #3F6212;
+  --mark-gradient: linear-gradient(105deg, #AACC00 0%, #80ED99 52%, #57CC99 100%);
+  --btn-gradient: linear-gradient(105deg, #AACC00 0%, #80ED99 52%, #57CC99 100%);
+  --btn-gradient-hover: linear-gradient(105deg, #b1d014 0%, #8aeea1 52%, #64d0a1 100%);
+  --btn-gradient-pressed: linear-gradient(105deg, #96b400 0%, #71d187 52%, #4db487 100%);
+  --primary-glow: rgba(170, 204, 0, 0.28);
+  --success: #1D4ED8;
+  --success-text: #1D4ED8;
+  --success-soft: rgba(29, 78, 216, 0.1);
+  --warning: #C2410C;
+  --warning-text: #C2410C;
+  --warning-soft: rgba(194, 65, 12, 0.12);
+  --danger: #7F1D1D;
+  --danger-text: #7F1D1D;
+  --danger-soft: rgba(127, 29, 29, 0.1);
+}
